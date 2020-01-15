@@ -1,0 +1,1837 @@
+{
+  "allHostsConfig": {
+    "items": []
+  }, 
+  "clusters": [
+    {
+      "displayName": "Cloudera QuickStart", 
+      "fullVersion": "5.13.0", 
+      "name": "Cloudera QuickStart", 
+      "services": [
+        {
+          "config": {
+            "items": [
+              {
+                "name": "hbase_service", 
+                "value": "hbase"
+              }, 
+              {
+                "name": "solr_service", 
+                "value": "solr"
+              }
+            ]
+          }, 
+          "displayName": "Key-Value Store Indexer", 
+          "name": "ks_indexer", 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "hbase_indexer_java_heapsize", 
+                    "value": "52428800"
+                  }
+                ]
+              }, 
+              "displayName": "Lily HBase Indexer Default Group", 
+              "name": "ks_indexer-HBASE_INDEXER-BASE", 
+              "roleType": "HBASE_INDEXER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "ks_indexer"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "ks_indexer-HBASE_INDEXER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "ks_indexer-HBASE_INDEXER-BASE"
+              }, 
+              "type": "HBASE_INDEXER"
+            }
+          ], 
+          "type": "KS_INDEXER"
+        }, 
+        {
+          "config": {
+            "items": [
+              {
+                "name": "mapreduce_yarn_service", 
+                "value": "yarn"
+              }
+            ]
+          }, 
+          "displayName": "Sqoop 2", 
+          "name": "sqoop", 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "sqoop_java_heapsize", 
+                    "value": "52428800"
+                  }
+                ]
+              }, 
+              "displayName": "Sqoop 2 Server Default Group", 
+              "name": "sqoop-SQOOP_SERVER-BASE", 
+              "roleType": "SQOOP_SERVER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "sqoop"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "sqoop-SQOOP_SERVER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "sqoop-SQOOP_SERVER-BASE"
+              }, 
+              "type": "SQOOP_SERVER"
+            }
+          ], 
+          "type": "SQOOP"
+        }, 
+        {
+          "config": {
+            "items": []
+          }, 
+          "displayName": "ZooKeeper", 
+          "name": "zookeeper", 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "maxSessionTimeout", 
+                    "value": "60000"
+                  }, 
+                  {
+                    "name": "zookeeper_server_java_heapsize", 
+                    "value": "52428800"
+                  }
+                ]
+              }, 
+              "displayName": "Server Default Group", 
+              "name": "zookeeper-SERVER-BASE", 
+              "roleType": "SERVER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "zookeeper"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": [
+                  {
+                    "name": "serverId", 
+                    "value": "1"
+                  }
+                ]
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "zookeeper-SERVER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "zookeeper-SERVER-BASE"
+              }, 
+              "type": "SERVER"
+            }
+          ], 
+          "type": "ZOOKEEPER"
+        }, 
+        {
+          "config": {
+            "items": [
+              {
+                "name": "hbase_service", 
+                "value": "hbase"
+              }, 
+              {
+                "name": "hive_service", 
+                "value": "hive"
+              }, 
+              {
+                "name": "hue_hbase_thrift", 
+                "value": "hbase-HBASETHRIFTSERVER"
+              }, 
+              {
+                "name": "hue_webhdfs", 
+                "value": "hdfs-NAMENODE"
+              }, 
+              {
+                "name": "impala_service", 
+                "value": "impala"
+              }, 
+              {
+                "name": "oozie_service", 
+                "value": "oozie"
+              }, 
+              {
+                "name": "solr_service", 
+                "value": "solr"
+              }, 
+              {
+                "name": "sqoop_service", 
+                "value": "sqoop"
+              }, 
+              {
+                "name": "zookeeper_service", 
+                "value": "zookeeper"
+              }, 
+              {
+                "name": "database_password", 
+                "value": "cloudera"
+              }, 
+              {
+                "name": "database_type", 
+                "value": "mysql"
+              }
+            ]
+          }, 
+          "displayName": "Hue", 
+          "name": "hue", 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "Hue Server Default Group", 
+              "name": "hue-HUE_SERVER-BASE", 
+              "roleType": "HUE_SERVER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hue"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "Kerberos Ticket Renewer Default Group", 
+              "name": "hue-KT_RENEWER-BASE", 
+              "roleType": "KT_RENEWER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hue"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": [
+                  {
+                    "name": "hue_server_bind_wildcard", 
+                    "value": "true"
+                  }
+                ]
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "hue-HUE_SERVER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "hue-HUE_SERVER-BASE"
+              }, 
+              "type": "HUE_SERVER"
+            }
+          ], 
+          "type": "HUE"
+        }, 
+        {
+          "config": {
+            "items": [
+              {
+                "name": "hbase_service", 
+                "value": "hbase"
+              }, 
+              {
+                "name": "hdfs_service", 
+                "value": "hdfs"
+              }, 
+              {
+                "name": "hive_service", 
+                "value": "hive"
+              }, 
+              {
+                "name": "rm_dirty", 
+                "value": "true"
+              }
+            ]
+          }, 
+          "displayName": "Impala", 
+          "name": "impala", 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "Impala Catalog Server Default Group", 
+              "name": "impala-CATALOGSERVER-BASE", 
+              "roleType": "CATALOGSERVER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "impala"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "enable_audit_event_log", 
+                    "value": "true"
+                  }, 
+                  {
+                    "name": "impalad_memory_limit", 
+                    "value": "536870912"
+                  }, 
+                  {
+                    "name": "scratch_dirs", 
+                    "value": "/impala/impalad"
+                  }
+                ]
+              }, 
+              "displayName": "Impala Daemon Default Group", 
+              "name": "impala-IMPALAD-BASE", 
+              "roleType": "IMPALAD", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "impala"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "llama_bind_wildcard", 
+                    "value": "true"
+                  }
+                ]
+              }, 
+              "displayName": "Impala Llama ApplicationMaster Default Group", 
+              "name": "impala-LLAMA-BASE", 
+              "roleType": "LLAMA", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "impala"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "Impala StateStore Default Group", 
+              "name": "impala-STATESTORE-BASE", 
+              "roleType": "STATESTORE", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "impala"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "impala-CATALOGSERVER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "impala-CATALOGSERVER-BASE"
+              }, 
+              "type": "CATALOGSERVER"
+            }, 
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "impala-IMPALAD", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "impala-IMPALAD-BASE"
+              }, 
+              "type": "IMPALAD"
+            }, 
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "impala-STATESTORE", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "impala-STATESTORE-BASE"
+              }, 
+              "type": "STATESTORE"
+            }
+          ], 
+          "type": "IMPALA"
+        }, 
+        {
+          "config": {
+            "items": [
+              {
+                "name": "hive_service", 
+                "value": "hive"
+              }, 
+              {
+                "name": "mapreduce_yarn_service", 
+                "value": "yarn"
+              }, 
+              {
+                "name": "zookeeper_service", 
+                "value": "zookeeper"
+              }
+            ]
+          }, 
+          "displayName": "Oozie", 
+          "name": "oozie", 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "oozie_database_host", 
+                    "value": "quickstart.cloudera"
+                  }, 
+                  {
+                    "name": "oozie_database_type", 
+                    "value": "mysql"
+                  }, 
+                  {
+                    "name": "oozie_database_user", 
+                    "value": "oozie"
+                  }, 
+                  {
+                    "name": "oozie_database_password", 
+                    "value": "cloudera"
+                  }, 
+                  {
+                    "name": "oozie_java_heapsize", 
+                    "value": "52428800"
+                  }
+                ]
+              }, 
+              "displayName": "Oozie Server Default Group", 
+              "name": "oozie-OOZIE_SERVER-BASE", 
+              "roleType": "OOZIE_SERVER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "oozie"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "oozie-OOZIE_SERVER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "oozie-OOZIE_SERVER-BASE"
+              }, 
+              "type": "OOZIE_SERVER"
+            }
+          ], 
+          "type": "OOZIE"
+        }, 
+        {
+          "config": {
+            "items": [
+              {
+                "name": "dfs_block_local_path_access_user", 
+                "value": "impala"
+              }, 
+              {
+                "name": "rm_dirty", 
+                "value": "true"
+              }, 
+              {
+                "name": "zookeeper_service", 
+                "value": "zookeeper"
+              }, 
+              {
+                "name": "dfs_replication", 
+                "value": 1
+              }
+            ]
+          }, 
+          "displayName": "HDFS", 
+          "name": "hdfs", 
+          "replicationSchedules": [], 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "balancer_java_heapsize", 
+                    "value": "52428800"
+                  }
+                ]
+              }, 
+              "displayName": "Balancer Default Group", 
+              "name": "hdfs-BALANCER-BASE", 
+              "roleType": "BALANCER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hdfs"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "datanode_java_heapsize", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "dfs_data_dir_list", 
+                    "value": "/var/lib/hadoop-hdfs/cache/hdfs/dfs/data"
+                  }, 
+                  {
+                    "name": "dfs_datanode_data_dir_perm", 
+                    "value": "755"
+                  }, 
+                  {
+                    "name": "dfs_datanode_du_reserved", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "dfs_datanode_max_locked_memory", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "dfs_datanode_bind_wildcard", 
+                    "value": "true"
+                  }
+                ]
+              }, 
+              "displayName": "DataNode Default Group", 
+              "name": "hdfs-DATANODE-BASE", 
+              "roleType": "DATANODE", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hdfs"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "Failover Controller Default Group", 
+              "name": "hdfs-FAILOVERCONTROLLER-BASE", 
+              "roleType": "FAILOVERCONTROLLER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hdfs"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "dfs_client_use_trash", 
+                    "value": "true"
+                  }
+                ]
+              }, 
+              "displayName": "Gateway Default Group", 
+              "name": "hdfs-GATEWAY-BASE", 
+              "roleType": "GATEWAY", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hdfs"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "HttpFS Default Group", 
+              "name": "hdfs-HTTPFS-BASE", 
+              "roleType": "HTTPFS", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hdfs"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "journalnode_bind_wildcard", 
+                    "value": "true"
+                  }
+                ]
+              }, 
+              "displayName": "JournalNode Default Group", 
+              "name": "hdfs-JOURNALNODE-BASE", 
+              "roleType": "JOURNALNODE", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hdfs"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "dfs_name_dir_list", 
+                    "value": "/var/lib/hadoop-hdfs/cache/hdfs/dfs/name"
+                  }, 
+                  {
+                    "name": "dfs_namenode_servicerpc_address", 
+                    "value": "8022"
+                  }, 
+                  {
+                    "name": "namenode_java_heapsize", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "namenode_bind_wildcard", 
+                    "value": "true"
+                  }
+                ]
+              }, 
+              "displayName": "NameNode Default Group", 
+              "name": "hdfs-NAMENODE-BASE", 
+              "roleType": "NAMENODE", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hdfs"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "NFS Gateway Default Group", 
+              "name": "hdfs-NFSGATEWAY-BASE", 
+              "roleType": "NFSGATEWAY", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hdfs"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "fs_checkpoint_dir_list", 
+                    "value": "/dfs/snn"
+                  }, 
+                  {
+                    "name": "secondary_namenode_java_heapsize", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "secondary_namenode_bind_wildcard", 
+                    "value": "true"
+                  }
+                ]
+              }, 
+              "displayName": "SecondaryNameNode Default Group", 
+              "name": "hdfs-SECONDARYNAMENODE-BASE", 
+              "roleType": "SECONDARYNAMENODE", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hdfs"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "hdfs-BALANCER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "hdfs-BALANCER-BASE"
+              }, 
+              "type": "BALANCER"
+            }, 
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "hdfs-DATANODE", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "hdfs-DATANODE-BASE"
+              }, 
+              "type": "DATANODE"
+            }, 
+            {
+              "config": {
+                "items": [
+                  {
+                    "name": "namenode_id", 
+                    "value": "1"
+                  }
+                ]
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "hdfs-NAMENODE", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "hdfs-NAMENODE-BASE"
+              }, 
+              "type": "NAMENODE"
+            }, 
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "hdfs-SECONDARYNAMENODE", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "hdfs-SECONDARYNAMENODE-BASE"
+              }, 
+              "type": "SECONDARYNAMENODE"
+            }
+          ], 
+          "snapshotPolicies": [], 
+          "type": "HDFS"
+        }, 
+        {
+          "config": {
+            "items": [
+              {
+                "name": "hdfs_service", 
+                "value": "hdfs"
+              }, 
+              {
+                "name": "rm_dirty", 
+                "value": "true"
+              }, 
+              {
+                "name": "zookeeper_service", 
+                "value": "zookeeper"
+              }
+            ]
+          }, 
+          "displayName": "Solr", 
+          "name": "solr", 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "Gateway Default Group", 
+              "name": "solr-GATEWAY-BASE", 
+              "roleType": "GATEWAY", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "solr"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "solr_java_direct_memory_size", 
+                    "value": "268435456"
+                  }, 
+                  {
+                    "name": "solr_java_heapsize", 
+                    "value": "209715200"
+                  }
+                ]
+              }, 
+              "displayName": "Solr Server Default Group", 
+              "name": "solr-SOLR_SERVER-BASE", 
+              "roleType": "SOLR_SERVER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "solr"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "solr-SOLR_SERVER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "solr-SOLR_SERVER-BASE"
+              }, 
+              "type": "SOLR_SERVER"
+            }
+          ], 
+          "type": "SOLR"
+        }, 
+        {
+          "config": {
+            "items": [
+              {
+                "name": "hbase_enable_indexing", 
+                "value": "true"
+              }, 
+              {
+                "name": "hbase_enable_replication", 
+                "value": "true"
+              }, 
+              {
+                "name": "hdfs_service", 
+                "value": "hdfs"
+              }, 
+              {
+                "name": "rm_dirty", 
+                "value": "true"
+              }, 
+              {
+                "name": "zookeeper_service", 
+                "value": "zookeeper"
+              }
+            ]
+          }, 
+          "displayName": "HBase", 
+          "name": "hbase", 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "Gateway Default Group", 
+              "name": "hbase-GATEWAY-BASE", 
+              "roleType": "GATEWAY", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hbase"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "HBase REST Server Default Group", 
+              "name": "hbase-HBASERESTSERVER-BASE", 
+              "roleType": "HBASERESTSERVER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hbase"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "hbase_thriftserver_java_heapsize", 
+                    "value": "52428800"
+                  }
+                ]
+              }, 
+              "displayName": "HBase Thrift Server Default Group", 
+              "name": "hbase-HBASETHRIFTSERVER-BASE", 
+              "roleType": "HBASETHRIFTSERVER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hbase"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "hbase_master_java_heapsize", 
+                    "value": "52428800"
+                  }
+                ]
+              }, 
+              "displayName": "Master Default Group", 
+              "name": "hbase-MASTER-BASE", 
+              "roleType": "MASTER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hbase"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "hbase_regionserver_java_heapsize", 
+                    "value": "52428800"
+                  }
+                ]
+              }, 
+              "displayName": "RegionServer Default Group", 
+              "name": "hbase-REGIONSERVER-BASE", 
+              "roleType": "REGIONSERVER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hbase"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "hbase-HBASETHRIFTSERVER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "hbase-HBASETHRIFTSERVER-BASE"
+              }, 
+              "type": "HBASETHRIFTSERVER"
+            }, 
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "hbase-MASTER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "hbase-MASTER-BASE"
+              }, 
+              "type": "MASTER"
+            }, 
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "hbase-REGIONSERVER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "hbase-REGIONSERVER-BASE"
+              }, 
+              "type": "REGIONSERVER"
+            }
+          ], 
+          "snapshotPolicies": [], 
+          "type": "HBASE"
+        }, 
+        {
+          "config": {
+            "items": [
+              {
+                "name": "hdfs_service", 
+                "value": "hdfs"
+              }, 
+              {
+                "name": "rm_dirty", 
+                "value": "true"
+              }, 
+              {
+                "name": "zookeeper_service", 
+                "value": "zookeeper"
+              }
+            ]
+          }, 
+          "displayName": "YARN (MR2 Included)", 
+          "name": "yarn", 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "io_sort_mb", 
+                    "value": "16"
+                  }, 
+                  {
+                    "name": "mapred_submit_replication", 
+                    "value": "1"
+                  }, 
+                  {
+                    "name": "mapreduce_client_java_heapsize", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "mapreduce_map_java_opts_max_heap", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "mapreduce_map_memory_mb", 
+                    "value": "128"
+                  }, 
+                  {
+                    "name": "mapreduce_reduce_java_opts_max_heap", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "mapreduce_reduce_memory_mb", 
+                    "value": "128"
+                  }, 
+                  {
+                    "name": "yarn_app_mapreduce_am_max_heap", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "yarn_app_mapreduce_am_resource_mb", 
+                    "value": "128"
+                  }
+                ]
+              }, 
+              "displayName": "Gateway Default Group", 
+              "name": "yarn-GATEWAY-BASE", 
+              "roleType": "GATEWAY", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "yarn"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "mr2_jobhistory_java_heapsize", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "yarn_jobhistory_bind_wildcard", 
+                    "value": "true"
+                  }
+                ]
+              }, 
+              "displayName": "JobHistory Server Default Group", 
+              "name": "yarn-JOBHISTORY-BASE", 
+              "roleType": "JOBHISTORY", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "yarn"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "node_manager_java_heapsize", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "yarn_nodemanager_heartbeat_interval_ms", 
+                    "value": "100"
+                  }, 
+                  {
+                    "name": "yarn_nodemanager_local_dirs", 
+                    "value": "/yarn/nm"
+                  }, 
+                  {
+                    "name": "yarn_nodemanager_resource_cpu_vcores", 
+                    "value": "3"
+                  }, 
+                  {
+                    "name": "yarn_nodemanager_resource_memory_mb", 
+                    "value": "3072"
+                  }
+                ]
+              }, 
+              "displayName": "NodeManager Default Group", 
+              "name": "yarn-NODEMANAGER-BASE", 
+              "roleType": "NODEMANAGER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "yarn"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "resource_manager_java_heapsize", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "yarn_scheduler_minimum_allocation_mb", 
+                    "value": "1"
+                  }, 
+                  {
+                    "name": "yarn_scheduler_maximum_allocation_mb", 
+                    "value": "2816"
+                  }, 
+                  {
+                    "name": "yarn_scheduler_maximum_allocation_vcores", 
+                    "value": "2"
+                  }, 
+                  {
+                    "name": "yarn_rm_bind_wildcard", 
+                    "value": "true"
+                  }
+                ]
+              }, 
+              "displayName": "ResourceManager Default Group", 
+              "name": "yarn-RESOURCEMANAGER-BASE", 
+              "roleType": "RESOURCEMANAGER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "yarn"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "yarn-JOBHISTORY", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "yarn-JOBHISTORY-BASE"
+              }, 
+              "type": "JOBHISTORY"
+            }, 
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "yarn-NODEMANAGER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "yarn-NODEMANAGER-BASE"
+              }, 
+              "type": "NODEMANAGER"
+            }, 
+            {
+              "config": {
+                "items": [
+                  {
+                    "name": "rm_id", 
+                    "value": "1"
+                  }
+                ]
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "yarn-RESOURCEMANAGER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "yarn-RESOURCEMANAGER-BASE"
+              }, 
+              "type": "RESOURCEMANAGER"
+            }
+          ], 
+          "type": "YARN"
+        }, 
+        {
+          "config": {
+            "items": [
+              {
+                "name": "yarn_service", 
+                "value": "yarn"
+              }
+            ]
+          }, 
+          "displayName": "Spark", 
+          "name": "spark_on_yarn", 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "Gateway Default Group", 
+              "name": "spark_on_yarn-GATEWAY-BASE", 
+              "roleType": "GATEWAY", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "spark_on_yarn"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "history_server_max_heapsize", 
+                    "value": "67108864"
+                  }
+                ]
+              }, 
+              "displayName": "History Server Default Group", 
+              "name": "spark_on_yarn-SPARK_YARN_HISTORY_SERVER-BASE", 
+              "roleType": "SPARK_YARN_HISTORY_SERVER", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "spark_on_yarn"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "spark-SPARK_YARN_HISTORY_SERVER", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "spark_on_yarn-SPARK_YARN_HISTORY_SERVER-BASE"
+              }, 
+              "type": "SPARK_YARN_HISTORY_SERVER"
+            }, 
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "spark_on_yarn-GATEWAY", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "spark_on_yarn-GATEWAY-BASE"
+              }, 
+              "type": "GATEWAY"
+            }
+          ], 
+          "type": "SPARK_ON_YARN"
+        }, 
+        {
+          "config": {
+            "items": [
+              {
+                "name": "hive_metastore_database_host", 
+                "value": "quickstart.cloudera"
+              }, 
+              {
+                "name": "hive_metastore_database_name", 
+                "value": "metastore"
+              }, 
+              {
+                "name": "hive_metastore_database_port", 
+                "value": "3306"
+              }, 
+              {
+                "name": "hive_metastore_database_type", 
+                "value": "mysql"
+              }, 
+              {
+                "name": "hive_metastore_database_user", 
+                "value": "hive"
+              }, 
+              {
+                "name": "hive_metastore_database_password", 
+                "value": "cloudera"
+              }, 
+              {
+                "name": "mapreduce_yarn_service", 
+                "value": "yarn"
+              }, 
+              {
+                "name": "spark_on_yarn_service", 
+                "value": "spark_on_yarn"
+              }, 
+              {
+                "name": "zookeeper_service", 
+                "value": "zookeeper"
+              }
+            ]
+          }, 
+          "displayName": "Hive", 
+          "name": "hive", 
+          "replicationSchedules": [], 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "hive_client_java_heapsize", 
+                    "value": "134217728"
+                  }
+                ]
+              }, 
+              "displayName": "Gateway Default Group", 
+              "name": "hive-GATEWAY-BASE", 
+              "roleType": "GATEWAY", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hive"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "hive_metastore_java_heapsize", 
+                    "value": "52428800"
+                  }
+                ]
+              }, 
+              "displayName": "Hive Metastore Server Default Group", 
+              "name": "hive-HIVEMETASTORE-BASE", 
+              "roleType": "HIVEMETASTORE", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hive"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": [
+                  {
+                    "name": "hiveserver2_java_heapsize", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "hiveserver2_spark_driver_memory", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "hiveserver2_spark_executor_memory", 
+                    "value": "52428800"
+                  }, 
+                  {
+                    "name": "hiveserver2_spark_yarn_driver_memory_overhead", 
+                    "value": "64"
+                  }, 
+                  {
+                    "name": "hiveserver2_spark_yarn_executor_memory_overhead", 
+                    "value": "64"
+                  }
+                ]
+              }, 
+              "displayName": "HiveServer2 Default Group", 
+              "name": "hive-HIVESERVER2-BASE", 
+              "roleType": "HIVESERVER2", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hive"
+              }
+            }, 
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "WebHCat Server Default Group", 
+              "name": "hive-WEBHCAT-BASE", 
+              "roleType": "WEBHCAT", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "hive"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "hive-GATEWAY", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "hive-GATEWAY-BASE"
+              }, 
+              "type": "GATEWAY"
+            }, 
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "hive-HIVEMETASTORE", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "hive-HIVEMETASTORE-BASE"
+              }, 
+              "type": "HIVEMETASTORE"
+            }, 
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "hive-HIVESERVER2", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "hive-HIVESERVER2-BASE"
+              }, 
+              "type": "HIVESERVER2"
+            }
+          ], 
+          "type": "HIVE"
+        }, 
+        {
+          "config": {
+            "items": []
+          }, 
+          "displayName": "Sqoop 1 Client", 
+          "name": "sqoop_client", 
+          "roleConfigGroups": [
+            {
+              "base": true, 
+              "config": {
+                "items": []
+              }, 
+              "displayName": "Gateway Default Group", 
+              "name": "sqoop_client-GATEWAY-BASE", 
+              "roleType": "GATEWAY", 
+              "serviceRef": {
+                "clusterName": "Cloudera QuickStart", 
+                "serviceName": "sqoop_client"
+              }
+            }
+          ], 
+          "roles": [
+            {
+              "config": {
+                "items": []
+              }, 
+              "hostRef": {
+                "hostId": "quickstart.cloudera"
+              }, 
+              "name": "sqoop_client-GATEWAY", 
+              "roleConfigGroupRef": {
+                "roleConfigGroupName": "sqoop_client-GATEWAY-BASE"
+              }, 
+              "type": "GATEWAY"
+            }
+          ], 
+          "type": "SQOOP_CLIENT"
+        }
+      ], 
+      "version": "CDH5"
+    }
+  ], 
+  "hostTemplates": {
+    "items": []
+  }, 
+  "hosts": [
+    {
+      "config": {
+        "items": []
+      }, 
+      "hostId": "quickstart.cloudera", 
+      "hostname": "quickstart.cloudera", 
+      "ipAddress": "127.0.0.1", 
+      "rackId": "/default"
+    }
+  ], 
+  "managementService": {
+    "config": {
+      "items": []
+    }, 
+    "displayName": "Cloudera Management Service", 
+    "name": "mgmt", 
+    "roleConfigGroups": [
+      {
+        "base": true, 
+        "config": {
+          "items": [
+            {
+              "name": "firehose_database_host", 
+              "value": "quickstart.cloudera:3306"
+            }, 
+            {
+              "name": "firehose_database_name", 
+              "value": "firehose"
+            }, 
+            {
+              "name": "firehose_database_type", 
+              "value": "mysql"
+            }, 
+            {
+              "name": "firehose_database_user", 
+              "value": "amon"
+            }, 
+            {
+              "name": "firehose_database_password", 
+              "value": "cloudera"
+            }, 
+            {
+              "name": "firehose_heapsize", 
+              "value": "268435456"
+            }
+          ]
+        }, 
+        "displayName": "Activity Monitor Default Group", 
+        "name": "mgmt-ACTIVITYMONITOR-BASE", 
+        "roleType": "ACTIVITYMONITOR", 
+        "serviceRef": {
+          "serviceName": "mgmt"
+        }
+      }, 
+      {
+        "base": true, 
+        "config": {
+          "items": []
+        }, 
+        "displayName": "Alert Publisher Default Group", 
+        "name": "mgmt-ALERTPUBLISHER-BASE", 
+        "roleType": "ALERTPUBLISHER", 
+        "serviceRef": {
+          "serviceName": "mgmt"
+        }
+      }, 
+      {
+        "base": true, 
+        "config": {
+          "items": [
+            {
+              "name": "event_server_heapsize", 
+              "value": "268435456"
+            }
+          ]
+        }, 
+        "displayName": "Event Server Default Group", 
+        "name": "mgmt-EVENTSERVER-BASE", 
+        "roleType": "EVENTSERVER", 
+        "serviceRef": {
+          "serviceName": "mgmt"
+        }
+      }, 
+      {
+        "base": true, 
+        "config": {
+          "items": [
+            {
+              "name": "firehose_heapsize", 
+              "value": "268435456"
+            }, 
+            {
+              "name": "firehose_non_java_memory_bytes", 
+              "value": "805306368"
+            }
+          ]
+        }, 
+        "displayName": "Host Monitor Default Group", 
+        "name": "mgmt-HOSTMONITOR-BASE", 
+        "roleType": "HOSTMONITOR", 
+        "serviceRef": {
+          "serviceName": "mgmt"
+        }
+      }, 
+      {
+        "base": true, 
+        "config": {
+          "items": [
+            {
+              "name": "navigator_database_host", 
+              "value": "quickstart.cloudera"
+            }, 
+            {
+              "name": "navigator_database_password", 
+              "value": "cloudera"
+            }, 
+            {
+              "name": "navigator_database_type", 
+              "value": "mysql"
+            }, 
+            {
+              "name": "navigator_heapsize", 
+              "value": "188743680"
+            }
+          ]
+        }, 
+        "displayName": "Navigator Audit Server Default Group", 
+        "name": "mgmt-NAVIGATOR-BASE", 
+        "roleType": "NAVIGATOR", 
+        "serviceRef": {
+          "serviceName": "mgmt"
+        }
+      }, 
+      {
+        "base": true, 
+        "config": {
+          "items": [
+            {
+              "name": "nav_metaserver_database_host", 
+              "value": "quickstart.cloudera"
+            }, 
+            {
+              "name": "nav_metaserver_database_password", 
+              "value": "cloudera"
+            }, 
+            {
+              "name": "nav_metaserver_database_type", 
+              "value": "mysql"
+            }, 
+            {
+              "name": "nav_metaserver_database_user", 
+              "value": "navms"
+            }, 
+            {
+              "name": "nav_metaserver_database_password", 
+              "value": "cloudera"
+            }, 
+            {
+              "name": "navigator_heapsize", 
+              "value": "536870912"
+            }
+          ]
+        }, 
+        "displayName": "Navigator Metadata Server Default Group", 
+        "name": "mgmt-NAVIGATORMETASERVER-BASE", 
+        "roleType": "NAVIGATORMETASERVER", 
+        "serviceRef": {
+          "serviceName": "mgmt"
+        }
+      }, 
+      {
+        "base": true, 
+        "config": {
+          "items": [
+            {
+              "name": "headlamp_database_host", 
+              "value": "quickstart.cloudera"
+            }, 
+            {
+              "name": "headlamp_database_name", 
+              "value": "rman"
+            }, 
+            {
+              "name": "headlamp_database_password", 
+              "value": "cloudera"
+            }, 
+            {
+              "name": "headlamp_database_type", 
+              "value": "mysql"
+            }, 
+            {
+              "name": "headlamp_database_user", 
+              "value": "rman"
+            }, 
+            {
+              "name": "headlamp_heapsize", 
+              "value": "268435456"
+            }
+          ]
+        }, 
+        "displayName": "Reports Manager Default Group", 
+        "name": "mgmt-REPORTSMANAGER-BASE", 
+        "roleType": "REPORTSMANAGER", 
+        "serviceRef": {
+          "serviceName": "mgmt"
+        }
+      }, 
+      {
+        "base": true, 
+        "config": {
+          "items": [
+            {
+              "name": "firehose_heapsize", 
+              "value": "268435456"
+            }, 
+            {
+              "name": "firehose_non_java_memory_bytes", 
+              "value": "805306368"
+            }
+          ]
+        }, 
+        "displayName": "Service Monitor Default Group", 
+        "name": "mgmt-SERVICEMONITOR-BASE", 
+        "roleType": "SERVICEMONITOR", 
+        "serviceRef": {
+          "serviceName": "mgmt"
+        }
+      }
+    ], 
+    "roles": [
+      {
+        "config": {
+          "items": []
+        }, 
+        "hostRef": {
+          "hostId": "quickstart.cloudera"
+        }, 
+        "name": "mgmt-ALERTPUBLISHER", 
+        "roleConfigGroupRef": {
+          "roleConfigGroupName": "mgmt-ALERTPUBLISHER-BASE"
+        }, 
+        "type": "ALERTPUBLISHER"
+      }, 
+      {
+        "config": {
+          "items": []
+        }, 
+        "hostRef": {
+          "hostId": "quickstart.cloudera"
+        }, 
+        "name": "mgmt-EVENTSERVER", 
+        "roleConfigGroupRef": {
+          "roleConfigGroupName": "mgmt-EVENTSERVER-BASE"
+        }, 
+        "type": "EVENTSERVER"
+      }, 
+      {
+        "config": {
+          "items": []
+        }, 
+        "hostRef": {
+          "hostId": "quickstart.cloudera"
+        }, 
+        "name": "mgmt-HOSTMONITOR", 
+        "roleConfigGroupRef": {
+          "roleConfigGroupName": "mgmt-HOSTMONITOR-BASE"
+        }, 
+        "type": "HOSTMONITOR"
+      }, 
+      {
+        "config": {
+          "items": []
+        }, 
+        "hostRef": {
+          "hostId": "quickstart.cloudera"
+        }, 
+        "name": "mgmt-NAVIGATOR", 
+        "roleConfigGroupRef": {
+          "roleConfigGroupName": "mgmt-NAVIGATOR-BASE"
+        }, 
+        "type": "NAVIGATOR"
+      }, 
+      {
+        "config": {
+          "items": []
+        }, 
+        "hostRef": {
+          "hostId": "quickstart.cloudera"
+        }, 
+        "name": "mgmt-NAVIGATORMETASERVER", 
+        "roleConfigGroupRef": {
+          "roleConfigGroupName": "mgmt-NAVIGATORMETASERVER-BASE"
+        }, 
+        "type": "NAVIGATORMETASERVER"
+      }, 
+      {
+        "config": {
+          "items": []
+        }, 
+        "hostRef": {
+          "hostId": "quickstart.cloudera"
+        }, 
+        "name": "mgmt-REPORTSMANAGER", 
+        "roleConfigGroupRef": {
+          "roleConfigGroupName": "mgmt-REPORTSMANAGER-BASE"
+        }, 
+        "type": "REPORTSMANAGER"
+      }, 
+      {
+        "config": {
+          "items": []
+        }, 
+        "hostRef": {
+          "hostId": "quickstart.cloudera"
+        }, 
+        "name": "mgmt-SERVICEMONITOR", 
+        "roleConfigGroupRef": {
+          "roleConfigGroupName": "mgmt-SERVICEMONITOR-BASE"
+        }, 
+        "type": "SERVICEMONITOR"
+      }
+    ], 
+    "type": "MGMT"
+  }, 
+  "managerSettings": {
+    "items": [
+      {
+        "name": "CUSTOM_IA_POLICY", 
+        "value": "The Cloudera QuickStart VM has been configured as a single-node cluster with Cloudera Manager. You can login to administer this cluster with the username 'cloudera' and the password 'cloudera'."
+      }, 
+      {
+        "name": "PUBLIC_CLOUD_STATUS", 
+        "value": "ON_PUBLIC_CLOUD"
+      }, 
+      {
+        "name": "REMOTE_PARCEL_REPO_URLS", 
+        "value": "http://archive.cloudera.com/cdh5/parcels/5.13.0/,http://archive.cloudera.com/accumulo-c5/parcels/latest/"
+      }, 
+      {
+        "name": "ENABLE_API_DEBUG", 
+        "value": "true"
+      }
+    ]
+  }, 
+  "peers": [], 
+  "users": [
+    {
+      "name": "cloudera", 
+      "password": "cloudera", 
+      "roles": [
+        "ROLE_ADMIN"
+      ]
+    }, 
+    {
+      "name": "admin", 
+      "password": "admin", 
+      "roles": [
+        "ROLE_ADMIN"
+      ]
+    }
+  ]
+}

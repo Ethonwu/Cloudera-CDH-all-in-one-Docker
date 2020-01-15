@@ -1,0 +1,427 @@
+#!/bin/bash
+if [ ! -e /var/lib/cloudera-quickstart/.cloudera-manager ]; then 
+    echo "By default, the Cloudera QuickStart VM run Cloudera's Distribution including"
+    echo "Apache Hadoop (CDH) under Linux's service and configuration management. If you"
+    echo "wish to migrate to Cloudera Manager, you must run one of the following"
+    echo "commands."
+    echo ""
+    echo "To use Cloudera Express (free), run:"
+    echo ""
+    echo "    sudo /home/cloudera/cloudera-manager --express"
+    echo ""
+    echo "This requires at least 8 GB of RAM and at least 2 virtual CPUs."
+    echo ""
+    echo "To begin a 60-day trial of Cloudera Enterprise with advanced management"
+    echo "features, run:"
+    echo ""
+    echo "    sudo /home/cloudera/cloudera-manager --enterprise"
+    echo ""
+    echo "This requires at least 10 GB or RAM and at least 2 virtual CPUs."
+    echo ""
+    echo "Be aware that after rebooting, it may take several minutes before Cloudera"
+    echo "Manager has started all of the services it manages and is ready to accept"
+    echo "connections from clients."
+    exit 1
+fi
+
+#
+# (c) Copyright 2011 Cloudera, Inc.
+#
+# init script for the Cloudera SCM Agent.
+#
+# chkconfig: 2345 90 10
+# description: Cloudera SCM Agent.
+
+### BEGIN INIT INFO
+# Provides: cloudera-scm-agent
+# Required-Start: $local_fs $network $syslog
+# Should-Start:
+# Required-Stop:
+# Default-Start: 3 4 5
+# Default-Stop: 0 1 2 6
+# Short-Description: Cloudera SCM Agent
+# Description: Cloudera SCM Agent
+### END INIT INFO
+
+# Lockable script
+LOCKFILE="/tmp/$(basename $0).lock"
+LOCKFD=99
+
+lock() {
+  flock -$1 $LOCKFD;
+}
+
+unlock() {
+  lock u;
+}
+
+no_more_locking() {
+  unlock;
+  lock xn && rm -f $LOCKFILE;
+}
+
+prepare_locking() {
+  eval "exec $LOCKFD>\"$LOCKFILE\"";
+  trap no_more_locking EXIT;
+}
+
+# Obtain an exclusive lock immediately or fail
+exlock_now() {
+  lock xn;
+}
+
+# Error handling on lock acquisition failure
+lock_failure_handler() {
+  echo "This script is being executed in another terminal. Exit."
+  exit 1
+}
+
+# Source function library.
+if [ -f /etc/rc.d/init.d/functions ]; then
+  . /etc/rc.d/init.d/functions
+elif [ -f /lib/lsb/init-functions ]; then
+  . /lib/lsb/init-functions
+  . /etc/rc.status
+  rc_reset
+fi
+
+prepare_locking
+exlock_now || lock_failure_handler
+
+prog="cloudera-scm-agent"
+# Name of program reported in /proc/<pid>/comm - 16 char limit
+pidname="cmf-agent"
+start_timeout=10
+kill_timeout=40
+
+# Source defaults.
+CMF_DEFAULTS=$(readlink -e $(dirname ${BASH_SOURCE-$0})/../default)
+CMF_DEFAULTS=${CMF_DEFAULTS:-/etc/default}
+
+[ -e $CMF_DEFAULTS/$prog ] && . $CMF_DEFAULTS/$prog
+
+# Paths to configuration, binaries, etc
+AGENT_SCRIPT=${CMF_SBINDIR:-/usr/sbin}/cmf-agent
+AGENT_OUT=${CMF_VAR:-/var}/log/$prog/$prog.out
+
+CMF_SUDO_CMD=${CMF_SUDO_CMD:-"su $USER -s"}
+CMF_DIR_OWNER=${USER:-cloudera-scm}
+
+# The binary to pass to checkpid and killproc must be the real path of python
+binary=$(which python)
+
+if [ ! -f $AGENT_SCRIPT ]; then
+  echo "File not found: $AGENT_SCRIPT"
+  exit 1
+fi
+
+#pid file
+pidfile=${PIDFILE-${CMF_VAR:-/var}/run/cloudera-scm-agent/$prog.pid}
+
+# Marker files for working around systemd
+clean_start_file=${CMF_VAR:-/var}/run/$prog/next_start_clean
+hard_stop_file=${CMF_VAR:-/var}/run/$prog/next_stop_hard
+
+is_suse=`[ -e /etc/SuSE-release ] && echo 1 || echo 0`
+
+is_systemd=`pstree -p | head -1 | grep 'systemd(1)' -q && echo 1 || echo 0`
+
+RETVAL=0
+
+# Check if a given process (based on the pidfile) is running.
+# Return 0 if the process is running, other value if not.
+local_checkpid() {
+  local local_binary="$1"
+  local local_pidfile="$2"
+
+  if [ ! -f $local_pidfile ]; then
+    return 1
+  fi
+  pid=$(cat $local_pidfile)
+  # "comm" file may not exist on old kernels, if not we fall back
+  # to all the old methods of checking the pid.
+  if [ "$(cat /proc/$pid/comm 2>/dev/null)" == "$1" ]; then
+      return 0
+  fi
+
+  if [ $is_suse -eq 1 ]; then
+    pidofproc -p $local_pidfile $local_binary > /dev/null
+  else
+    checkpid $pid
+  fi
+
+  local check_result=$?
+  if [ $check_result != 0 ]; then
+    if [ ! -d /proc/$pid ]; then
+      return $check_result;
+    else
+      return 0
+    fi
+  fi
+  return 0
+}
+
+local_killproc() {
+  local local_binary="$1"
+  local local_pidfile="$2"
+  local pid=`cat $local_pidfile`
+
+  if [ $is_suse -eq 1 ]; then
+    killproc -t $kill_timeout -p $local_pidfile $local_binary
+  else
+    killproc -p $local_pidfile -d $kill_timeout $local_binary
+  fi
+
+  local check_result=$?
+  if [ $check_result == 0 ]; then
+    ps ax | awk '{print $1}' | grep -Fx $pid > /dev/null
+    if [ $? = 1 ]; then
+      return 0
+    else
+      echo $pid > $local_pidfile
+      return 1
+    fi
+  fi
+  return $check_result
+}
+
+local_check_start() {
+  if [ $is_suse -eq 1 ]; then
+    local_checkpid $binary $pidfile && log_success_msg || log_failure_msg
+  else
+    local_checkpid $binary $pidfile && echo_success || echo_failure
+  fi
+  return $?
+}
+
+local_print_stop() {
+  if [ $is_suse -eq 1 ]; then
+    [ $RETVAL = 0 ] && log_success_msg || log_failure_msg
+  else
+    # killproc prints on Redhat.
+    echo
+  fi
+}
+
+start() {
+  # check to see if the agent is already running by looking at the pid file
+  # and grepping the process table.
+  local_checkpid $binary $pidfile
+  if [ $? = 0 ]; then
+    echo "$prog is already running"
+    exit 0
+  fi
+  install -d -o $CMF_DIR_OWNER -g $CMF_DIR_OWNER /var/run/cloudera-scm-agent
+  echo -n $"Starting $prog: "
+
+  $CMF_SUDO_CMD /bin/bash -c "$AGENT_SCRIPT --daemon --comm_name $pidname --pidfile $pidfile $CMF_AGENT_ARGS >> $AGENT_OUT 2>&1 </dev/null"
+
+  # print status information.
+  local_check_start
+  RETVAL=$?
+  echo
+  return $RETVAL
+}
+
+clean_start() {
+  CMF_AGENT_ARGS="$CMF_AGENT_ARGS --clear_agent_dir"
+  start
+}
+
+local_stop() {
+  local local_prog="$1"
+  local local_binary="$2"
+  local local_pidfile="$3"
+
+  local_checkpid $local_binary $local_pidfile
+  if [ $? != 0 ]; then
+    echo "$local_prog is already stopped"
+    return 0
+  fi
+
+  echo -n "Stopping $local_prog: "
+  local_killproc $local_binary $local_pidfile
+  RETVAL=$?
+  local_print_stop
+  return $RETVAL
+}
+
+# Stop the given process and remove the pidfile if the process has been stopped
+# Return 0 if operation succeeds, 1 otherwise.
+stop() {
+  local_stop $prog $binary $pidfile
+  if [ $? = 0 ]; then
+    rm -f ${pidfile}
+    return 0
+  else
+    return 1
+  fi
+}
+
+hard_stop() {
+  stop
+  if [ $? != 0 ]; then
+    return 1
+  fi
+
+  # Additionally stop the supervisord
+  local_stop supervisord python ${CMF_VAR:-/var}/run/$prog/supervisor/supervisord.pid
+}
+
+status_fn() {
+  if [ $is_suse -eq 1 ]; then
+    echo -n "Checking for service $prog"
+    local_checkpid $binary $pidfile
+    rc_status -v
+  else
+    status -p $pidfile $prog
+  fi
+  RETVAL=$?
+}
+
+hard_stop_warning() {
+  local command_prefix="$1"
+  echo "This command will shut down the Agent, as well as abruptly stopping" \
+       "all running processes that the Agent is currently managing." \
+       "If you are sure you want to do this, please use the" \
+       "'${command_prefix}_confirmed' command."
+  # Return a failure code so this doesn't become a silent no-op in an
+  # automation script.
+  RETVAL=-1
+}
+
+next_start_clean() {
+  touch $clean_start_file
+  RETVAL=$?
+}
+
+next_stop_hard() {
+  touch $hard_stop_file
+  RETVAL=$?
+}
+
+systemd_warning() {
+  local original_cmd="$1"
+  local replacement_cmd="$2"
+  local base_cmd="$3"
+  echo "The '${original_cmd}' command is not supported on systemd based distributions." \
+       "Please separately invoke the '${replacement_cmd}' and '${base_cmd}' commands instead."
+  # Return a failure code so this doesn't become a silent no-op in an
+  # automation script.
+  RETVAL=-1
+}
+
+condrestart(){
+  [ -e ${pidfile} ] && restart || :
+}
+
+restart() {
+  stop
+  if [ $? != 0 ]; then
+    return 1
+  fi
+  start
+}
+
+try_restart() {
+  local_checkpid
+  if [ $? !=0 ];then
+    echo "$local_prog is not running"
+    return 1
+  fi
+  restart
+}
+
+case "$1" in
+  start)
+    if [ -e $clean_start_file ]; then
+      rm -f $clean_start_file
+      clean_start
+    else
+      start
+    fi
+    ;;
+  stop)
+    if [ -e $hard_stop_file ]; then
+      rm -f $hard_stop_file
+      hard_stop
+    else
+      stop
+    fi
+    ;;
+  status)
+    status_fn
+    ;;
+  restart)
+    restart
+    ;;
+  clean_start)
+    if [ $is_systemd -eq 1 ]; then
+      systemd_warning $1 next_start_clean start
+    else
+      clean_start
+    fi
+    ;;
+  hard_stop)
+    if [ $is_systemd -eq 1 ]; then
+      systemd_warning $1 next_stop_hard stop
+    else
+      hard_stop_warning $1
+    fi
+    ;;
+  hard_stop_confirmed)
+    if [ $is_systemd -eq 1 ]; then
+      systemd_warning $1 next_stop_hard stop
+    else
+      hard_stop
+    fi
+    ;;
+  hard_restart)
+    if [ $is_systemd -eq 1 ]; then
+      systemd_warning $1 next_stop_hard restart
+    else
+      hard_stop_warning $1
+    fi
+    ;;
+  hard_restart_confirmed)
+    if [ $is_systemd -eq 1 ]; then
+      systemd_warning $1 next_stop_hard restart
+    else
+      hard_stop
+      start
+    fi
+    ;;
+  clean_restart)
+    if [ $is_systemd -eq 1 ]; then
+      systemd_warning $1 next_start_clean restart
+    else
+      hard_stop_warning $1
+    fi
+    ;;
+  clean_restart_confirmed)
+    if [ $is_systemd -eq 1 ]; then
+      systemd_warning $1 next_start_clean restart
+    else
+      hard_stop
+      clean_start
+    fi
+    ;;
+  next_start_clean)
+    next_start_clean
+    ;;
+  next_stop_hard)
+    next_stop_hard
+    ;;
+  condrestart)
+    condrestart
+    ;;
+  *)
+    if [ $is_systemd -eq 1 ]; then
+      echo $"Usage: $prog {start|stop|restart|next_stop_hard|next_start_clean|status|condrestart}"
+    else
+      echo $"Usage: $prog {start|stop|restart|clean_start|hard_stop|hard_restart|clean_restart|status|condrestart}"
+    fi
+    RETVAL=3
+esac
+
+exit $RETVAL

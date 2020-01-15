@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="conf"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/avro.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-beanutils-core.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-beanutils.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-cli.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-codec.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-collections.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-compress.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-configuration.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-digester.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-httpclient.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-io.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-lang.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-logging.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-math3.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/commons-net.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/guava.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-annotations.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-auth.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-common.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-hdfs.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-mapreduce-client-app.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-mapreduce-client-common.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-mapreduce-client-core.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-mapreduce-client-jobclient.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-mapreduce-client-shuffle.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-yarn-api.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-yarn-client.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-yarn-common.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/hadoop-yarn-server-common.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/htrace-core4.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/jetty-util.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/jsr305.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/log4j.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/paranamer.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/protobuf-java.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/slf4j-api.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/snappy-java.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/xmlenc.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/xz.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/hadoop/client/zookeeper.jar"/>
+	<classpathentry kind="lib" path="/home/cloudera/lib/mrunit-0.9.0-incubating-hadoop2.jar"/>
+	<classpathentry kind="lib" path="/home/cloudera/lib/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="/home/cloudera/lib/hamcrest-all-1.1.jar"/>
+  
+    
+	<classpathentry kind="output" path="bin"/>
+</classpath>

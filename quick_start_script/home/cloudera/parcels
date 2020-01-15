@@ -1,0 +1,159 @@
+#! /usr/bin/env bash
+
+CM_API=/home/cloudera/cm_api.py
+CM_CLUSTER_NAME='Cloudera QuickStart'
+PARCEL_VERSION='5.13.0-1.cdh5.13.0.p0.29'
+
+function terminate() {
+    if [ "${PAUSE}" == 'true' ]; then
+        echo ""
+        read -p "Press [Enter] to exit..."
+    fi
+    exit ${1}
+}
+
+function ensure_user_is_root() {
+    if [[ "$EUID" -ne "0" ]]; then
+        echo "You must run this script as root. Try 'sudo ${0} ${@}'."
+        terminate 1
+    fi
+}
+
+function parse_arguments() {
+    while [[ $# > 0 ]]; do
+        argument="$1"
+        case $argument in
+            --version)
+                export PARCEL_VERSION="$2"
+                shift
+            ;;
+            --pause)
+                export PAUSE='true'
+            ;;
+            *)
+                echo "Unknown option: ${argument}"
+                terminate 1
+            ;;
+        esac
+        shift
+    done
+}
+
+function log() {
+    echo "[QuickStart] ${1}"
+}
+
+PARCEL_API=clusters/${CM_CLUSTER_NAME}/parcels/products/CDH/versions/${PARCEL_VERSION}
+
+function post_parcel_command() {
+    COMMAND=${1}
+    ${CM_API} --method POST "${PARCEL_API}/commands/${COMMAND}" >/dev/null
+}
+
+function await_parcel_status() {
+    STATUS=${1}
+    while true; do
+        if ${CM_API} "${PARCEL_API}" | grep "\"stage\"\s*:\s*\"${STATUS}\"" >/dev/null; then
+            return 0
+        fi
+    done
+}
+
+ensure_user_is_root
+parse_arguments ${@}
+
+if [ ! -e /var/lib/cloudera-quickstart/.cloudera-manager ]; then
+    cat <<EOF
+
+To migrate from Linux packages to parcels, you must be using Cloudera Manager
+to manage your cluster. You can migrate to Cloudera Manager using one of the
+following options:
+
+To use Cloudera Express (free), run:
+
+    sudo /home/cloudera/cloudera-manager --express
+
+This requires at least 8 GB of RAM and at least 2 virtual CPUs.
+
+To begin a 60-day trial of Cloudera Enterprise with advanced management
+features, run:
+
+    sudo /home/cloudera/cloudera-manager --enterprise
+
+This requires at least 10 GB or RAM and at least 2 virtual CPUs.
+
+Be aware that after rebooting, it may take several minutes before Cloudera
+Manager has started all of the services it manages and is ready to accept
+connections from clients.
+
+EOF
+    terminate 1
+fi
+
+if ! service cloudera-scm-server status 2>&1 >/dev/null; then
+    cat <<EOF
+
+The Cloudera Manager Server is not running on this machine. It must be running
+in order to download and activate parcels. You can confirm the status of the
+service by running:
+
+    sudo service cloudera-scm-server status
+
+You can attempt to restart it by running:
+
+    sudo service cloudera-scm-server restart
+
+If you continue to have problems you can find the log files in:
+
+    /var/log/cloudera-scm-server
+
+EOF
+    terminate 2
+fi
+
+
+log 'Downloading parcel...'
+post_parcel_command 'startDownload'
+await_parcel_status 'DOWNLOADED'
+
+log 'Distributing / decompressing parcel...'
+post_parcel_command 'startDistribution'
+await_parcel_status 'DISTRIBUTED'
+
+log 'Activating parcel...'
+post_parcel_command 'activate'
+await_parcel_status 'ACTIVATED'
+
+touch /var/lib/cloudera-quickstart/.parcels
+
+log "Updating references and other configuration..."
+CONFIG_JS=/var/lib/cloudera-quickstart/tutorial/js/config.js
+sed -i -e 's/^parcels\s\{0,\}=.*false/parcels = true;/' ${CONFIG_JS}
+
+SEARCH='classpathentry kind="lib" path="/usr/'
+REPLACE='classpathentry kind="lib" path="/opt/cloudera/parcels/CDH/'
+ECLIPSE_CLASSPATH='/home/cloudera/workspace/training/.classpath'
+sed -i -e "s#${SEARCH}#${REPLACE}#" ${ECLIPSE_CLASSPATH}
+
+log "Stopping currently running services..."
+${CM_API} --method POST "clusters/${CM_CLUSTER_NAME}/commands/stop" >/dev/null
+
+log 'Redeploying client configuration...'
+${CM_API} --method POST "clusters/${CM_CLUSTER_NAME}/commands/deployClientConfig" >/dev/null
+
+log 'Removing CDH Linux packages...'
+yum remove -y `yumdb search from_repo cloudera-cdh5 | grep -v ^$ | grep -v from_repo | tail -n +2` 2>&1 >/dev/null
+
+log 'Restarting Cloudera Manager agent...'
+service cloudera-scm-agent restart
+
+cat <<EOF
+________________________________________________________________________________
+
+Success! Your cluster is now set up to use a parcel instead of Linux packages.
+You can now restart the services you wish to use.
+
+EOF
+
+terminate 0
+

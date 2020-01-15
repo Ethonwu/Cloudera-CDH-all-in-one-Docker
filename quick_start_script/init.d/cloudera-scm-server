@@ -1,0 +1,393 @@
+#!/bin/bash
+if [ ! -e /var/lib/cloudera-quickstart/.cloudera-manager ]; then 
+    echo "By default, the Cloudera QuickStart VM run Cloudera's Distribution including"
+    echo "Apache Hadoop (CDH) under Linux's service and configuration management. If you"
+    echo "wish to migrate to Cloudera Manager, you must run one of the following"
+    echo "commands."
+    echo ""
+    echo "To use Cloudera Express (free), run:"
+    echo ""
+    echo "    sudo /home/cloudera/cloudera-manager --express"
+    echo ""
+    echo "This requires at least 8 GB of RAM and at least 2 virtual CPUs."
+    echo ""
+    echo "To begin a 60-day trial of Cloudera Enterprise with advanced management"
+    echo "features, run:"
+    echo ""
+    echo "    sudo /home/cloudera/cloudera-manager --enterprise"
+    echo ""
+    echo "This requires at least 10 GB or RAM and at least 2 virtual CPUs."
+    echo ""
+    echo "Be aware that after rebooting, it may take several minutes before Cloudera"
+    echo "Manager has started all of the services it manages and is ready to accept"
+    echo "connections from clients."
+    exit 1
+fi
+
+#
+# (c) Copyright 2011 Cloudera, Inc.
+#
+# init script for the Cloudera SCM Server.
+#
+# chkconfig: 2345 90 10
+# description: Cloudera SCM Server.
+
+### BEGIN INIT INFO
+# Provides: cloudera-scm-server
+# Required-Start: $local_fs $network $remote_fs $syslog +cloudera-scm-server-db +mysql +postgresql
+# Should-Start:
+# Required-Stop:
+# Default-Start: 3 4 5
+# Default-Stop: 0 1 2 6
+# Short-Description: Cloudera SCM Server
+# Description: Cloudera SCM Server
+### END INIT INFO
+
+# Lockable script
+LOCKFILE="/tmp/$(basename $0).lock"
+LOCKFD=99
+
+lock() {
+  flock -$1 $LOCKFD;
+}
+
+unlock() {
+  lock u;
+}
+
+no_more_locking() {
+  unlock;
+  lock xn && rm -f $LOCKFILE;
+}
+
+prepare_locking() {
+  eval "exec $LOCKFD>\"$LOCKFILE\"";
+  trap no_more_locking EXIT;
+}
+
+# Obtain an exclusive lock immediately or fail
+exlock_now() {
+  lock xn;
+}
+
+# Error handling on lock acquisition failure
+lock_failure_handler() {
+  echo "This script is being executed in another terminal. Exit."
+  exit 1
+}
+
+# Source function library.
+if [ -f /etc/rc.d/init.d/functions ]; then
+  . /etc/rc.d/init.d/functions
+elif [ -f /lib/lsb/init-functions ]; then
+  . /lib/lsb/init-functions
+  . /etc/rc.status
+  rc_reset
+fi
+
+prepare_locking
+exlock_now || lock_failure_handler
+
+prog="cloudera-scm-server"
+start_timeout=5
+kill_timeout=5
+
+# Source defaults file.
+CMF_DEFAULTS=$(readlink -e $(dirname ${BASH_SOURCE-$0})/../default)
+CMF_DEFAULTS=${CMF_DEFAULTS:-/etc/default}
+
+[ -e $CMF_DEFAULTS/$prog ] && . $CMF_DEFAULTS/$prog
+
+# Paths to configuration, binaries, etc
+SERVER_SCRIPT=${CMF_SBINDIR:-/usr/sbin}/cmf-server
+
+SERVER_OUT="${CMF_VAR:-/var}/log/$prog/$prog.out"
+USER=cloudera-scm
+GROUP=cloudera-scm
+MAX_PERMGEN=256
+MAX_HEAP=2048
+
+CMF_SUDO_CMD=${CMF_SUDO_CMD:-"su $USER -s"}
+
+# The binary to pass to checkpid and killproc on SuSE
+# depends on whether a CMF_SUDO_CMD was used. If not,
+# then the real binary is passed, otherwise it has
+# to be the CMF_SUDO_CMD binary.
+if [ "$CMF_SUDO_CMD" = " " ]; then
+  binary="java"
+else
+  binary=$(echo $CMF_SUDO_CMD | cut -d ' ' -f 1)
+fi
+
+if [ ! -f $SERVER_SCRIPT ]; then
+  echo "File not found: $SERVER_SCRIPT"
+  exit 1
+fi
+
+#pid file
+pidfile=${PIDFILE-${CMF_VAR:-/var}/run/$prog.pid}
+
+forcefile=${CMF_VAR:-/var}/run/$prog/force_next_start
+
+is_suse=`[ -e /etc/SuSE-release ] && echo 1 || echo 0`
+
+is_systemd=`pstree -p | head -1 | grep 'systemd(1)' -q && echo 1 || echo 0`
+
+RETVAL=0
+
+# Check if a given process (based on the pidfile) is running.
+# Return 0 if the process is running, other value if not.
+local_checkpid() {
+  if [ ! -f $pidfile ]; then
+    return 1
+  fi
+
+  if [ $is_suse -eq 1 ]; then
+    pidofproc -p $pidfile $binary > /dev/null
+  else
+    checkpid `cat $pidfile`
+  fi
+
+  RETVAL=$?
+  if [ $RETVAL != 0 ]; then
+    ps ax | awk '{print $1}' | grep -Fx `cat $pidfile` > /dev/null
+    if [ $? = 1 ]; then
+      return $RETVAL;
+    else
+      return 0
+    fi
+  fi
+  return 0
+}
+
+local_killproc() {
+  local pid=`cat $pidfile`
+
+  if [ $is_suse -eq 1 ]; then
+    killproc -t $kill_timeout -p $pidfile $binary
+  else
+    killproc -p $pidfile -d $kill_timeout $prog
+  fi
+  RETVAL=$?
+  if [ $RETVAL == 0 ]; then
+    ps ax | awk '{print $1}' | grep -Fx $pid > /dev/null
+    if [ $? = 1 ]; then
+      return 0
+    else
+      echo $pid > $pidfile
+      return 1
+    fi
+  fi
+  return $RETVAL
+}
+
+local_check_start() {
+  if [ $is_suse -eq 1 ]; then
+    local_checkpid && log_success_msg || log_failure_msg
+  else
+    local_checkpid && echo_success || echo_failure
+  fi
+  return $RETVAL
+}
+
+local_print_stop() {
+  if [ $is_suse -eq 1 ]; then
+    [ $RETVAL = 0 ] && log_success_msg || log_failure_msg
+  else
+    # killproc prints on Redhat.
+    echo
+  fi
+}
+
+local_check_success() {
+  if [ $is_suse -eq 1 ]; then
+    [ $RETVAL = 0 ] && log_success_msg || log_failure_msg
+  else
+    [ $RETVAL = 0 ] && echo_success || echo_failure
+  fi
+}
+
+# This method is used to check if the JVM Max Heap or PermGen space is above
+# the minimum limit for the SCM server. Each release we perf test SCM and change
+# the minimum requirement if needed. This check ensures that we emit an error
+# message if customers are running with a lower memory setting. We then exit
+# and don't start CM server, letting user fix the issues instead of continuing
+# with a broken configuration.
+#
+# param 1: regex to use to find the memory setting in java commnad line
+# param 2: minimum memory limit, value should be in MiB.
+# param 3: warning to emit if the value is below specified limit
+check_jvm_memory() {
+  regex=$1
+  limit=$2
+  message=$3
+  memory=0
+  if [[ "$CMF_JAVA_OPTS" =~ $regex ]]; then
+    memory=${BASH_REMATCH[1]}
+    unit=${BASH_REMATCH[2]}
+    unit=$(echo $unit | tr "[:upper:]" "[:lower:]")
+    if [[ "$unit" = "g" ]]; then
+      memory=$((memory*1024))
+    fi
+  fi
+
+  if [[ "$memory" -lt "$limit" ]]; then
+    echo $message | tee -a $SERVER_OUT
+    exit 1
+  fi
+}
+
+# Checks various parameters to make sure that we are starting CM with
+# sane values. Currently checking only JVM memory parameters.
+sanity_check() {
+  # check if the java perm gen is set to 256m or above, if not generate a warning
+  permgen_regex="MaxPermSize=([0-9]+)([mMgG])"
+  check_jvm_memory $permgen_regex $MAX_PERMGEN "[error] JVM PermGen is set less than 256m, CM server may run out of PermGen space. Update CMF_JAVA_OPTS in $CMF_DEFAULTS/$prog to fix this."
+
+  # check if the java max heap is set to 2G or above, if not generate a warning
+  maxheap_regex="Xmx([0-9]+)([mMgG])"
+  check_jvm_memory $maxheap_regex $MAX_HEAP "[error] JVM MaxHeap is set less than 2G, CM server may run out of Heap space. Update CMF_JAVA_OPTS in $CMF_DEFAULTS/$prog to fix this."
+}
+
+start() {
+  # check to see if the server is already running
+  local_checkpid
+  if [ $? = 0 ]; then
+    echo "$prog is already running"
+    exit 0
+  fi
+
+  install -d -o $USER -g $GROUP ${CMF_VAR:-/var}/run/cloudera-scm-server
+
+  cat < /dev/null > $SERVER_OUT
+  sanity_check
+  echo -n "Starting $prog: "
+
+  if [ -e $forcefile ]; then
+    CMF_SERVER_ARGS="$CMF_SERVER_ARGS -hard-stop-commands"
+    rm -f $forcefile
+  fi
+
+  $CMF_SUDO_CMD /bin/bash -c "nohup $SERVER_SCRIPT $CMF_SERVER_ARGS" >> $SERVER_OUT 2>&1 </dev/null &
+  # pid is technically su's but it will die when the server dies.
+  server_pid=$!
+  echo $server_pid > $pidfile
+  # sleep so the process can make its way to the process table - and out again
+  # if it fails at startup - which could take a while.
+  sleep $start_timeout
+  disown -ar
+  # print status information.
+  local_check_start
+  RETVAL=$?
+  echo
+  return $RETVAL
+}
+
+force_start() {
+  CMF_SERVER_ARGS="$CMF_SERVER_ARGS -hard-stop-commands"
+  start
+}
+
+# Stop the given process and remove the pidfile if the process has been stopped
+# Return 0 if operation succeeds, 1 otherwise.
+stop() {
+  local_checkpid
+  if [ $? != 0 ]; then
+    echo "$prog is already stopped"
+    return 0
+  fi
+
+  echo -n $"Stopping $prog: "
+  local_killproc
+  local kill_retval=$?
+  local_print_stop
+  if [ $kill_retval = 0 ]; then
+    # Since the process has been terminated, safely remove its pid file.
+    rm -f ${pidfile}
+    return 0
+  else
+    return 1
+  fi
+}
+
+status_fn() {
+  if [ $is_suse -eq 1 ]; then
+    echo -n "Checking for service $prog"
+    local_checkpid
+    rc_status -v
+  else
+    status -p $pidfile $prog
+  fi
+  RETVAL=$?
+}
+
+condrestart() {
+  [ -e ${pidfile} ] && restart || :
+}
+
+restart() {
+  stop
+  if [ $? != 0 ]; then
+    return 1
+  fi
+  start
+}
+
+force_start_warning() {
+  echo "The 'force_start' command is not supported on systemd based distros." \
+       "Please separately invoke the 'force_next_start' and 'start' commands instead."
+  # Return a failure code so this doesn't become a silent no-op in an
+  # automation script.
+  RETVAL=-1
+}
+
+force_next_start() {
+  touch $forcefile
+  RETVAL=$?
+}
+
+try_restart() {
+  local_checkpid
+  if [ $? !=0 ];then
+    echo "$prog is not running"
+    return 1
+  fi
+  restart
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  force_start)
+    if [ $is_systemd -eq 1 ]; then
+      force_start_warning
+    else
+      force_start
+    fi
+    ;;
+  force_next_start)
+    force_next_start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    status_fn
+    ;;
+  restart)
+    restart
+    ;;
+  condrestart)
+    condrestart
+    ;;
+  *)
+    if [ $is_systemd -eq 1 ]; then
+      echo $"Usage: $prog {start|force_next_start|stop|restart|status|condrestart}"
+    else
+      echo $"Usage: $prog {start|force_start|stop|restart|status|condrestart}"
+    fi
+    RETVAL=3
+esac
+
+exit $RETVAL

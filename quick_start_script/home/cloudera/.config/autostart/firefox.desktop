@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=firefox http://quickstart.cloudera
+Hidden=false
+X-GNOME-Autostart-enabled=true
+Name[en_US]=Firefox
+Name=Firefox
+Comment[en_US]=Cloudera VM - Hadoop, made easy.
+Comment=Cloudera VM - Hadoop, made easy.

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html class=" no-ie js flexbox canvas canvastext no-webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop no-websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients no-cssreflections csstransforms no-csstransforms3d csstransitions fontface video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths" lang="en">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>
+        Connecting to Cloudera Manager...
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/cms.css">
+
+    <style>
+        .label_productName_express{
+            background-image: url("img/sprite.png")!important;
+            background-position: 0 0;
+            height: 28px;
+            width: 210px;
+        }
+    </style>
+
+    <script>
+        var scriptElement = document.createElement('script');
+        scriptElement.type = 'text/javascript';
+        scriptElement.src = 'http://quickstart.cloudera:7180/static/ext/jquery/js/jquery-2.1.1.min.js?t=' + new Date().getTime();
+        document.getElementsByTagName('head')[0].appendChild(scriptElement);
+
+        function reload() {
+            window.location.href = window.location.href;
+        }
+
+        function check() {
+            cloudera_manager_url = 'http://quickstart.cloudera:7180';
+            if (typeof $ === 'function') {
+                window.location = cloudera_manager_url;
+            }
+            else {
+                window.setTimeout(reload, 5000);
+            }
+        }
+    </script>
+    <body class="Fill" onLoad="check()">
+        <table class="AppHeader CustomGradientblack">
+            <tbody>
+                <tr>
+                    <td><a class="appName" href=""><span class="logo label_productName_express"></span><span class="hidden productName">Manager (Free Edition)</span></a></td>
+                    <td>
+                        <ul class="AppLinks AppTabSet nav pull-right">
+                            <li><a href="https://groups.google.com/a/cloudera.org/group/scm-users/topics" target="_blank" data-event-category="Support" data-event="Support Link Clicked">Support Portal</a></li>
+                            <li><a id="helpAppLink" href="http://tiny.cloudera.com/cm-free-guide-4.5.0" target="_blank" data-event-category="Help" data-event="Help Link Clicked">Help</a></li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="Main">
+            <style scoped="scoped">
+                .LoginForm {
+                    margin: 150px auto;
+                    vertical-align: middle;
+                }
+
+                .LoginForm h1 {
+                    font-size: 19px;
+                    font-weight: bold;
+                    padding-left: 0;
+                    margin-left: 0;
+                }
+
+                .LoginForm {
+                    width: 600px;
+                }
+
+                .LoginForm label,
+                .LoginForm input[type=text],
+                .LoginForm input[type=password] {
+                    width: 292px;
+                }
+
+                .LoginForm label {
+                    display: block !important;
+                }
+            </style>
+            <form class="LoginForm well">
+                <h1>Attempting to connect to Cloudera Manager... <img src="img/spinner.gif" style="vertical-align:top; margin-top:8px;"/></h1>
+
+                <p>
+                    By default, the Cloudera QuickStart VM runs Cloudera's Distribution including
+                    Apache Hadoop (CDH) under Linux's service and configuration management. If you
+                    wish to migrate to Cloudera Manager, you must run one of the following
+                    commands.
+                </p>
+
+                <p>
+                    To use Cloudera Express (free), run <em>Launch Cloudera Express</em> on the Desktop.
+                    This requires at least 8 GB of RAM and at least 2 virtual CPUs.
+                </p>
+
+                <p>
+                    To begin a 60-day trial of Cloudera Enterprise with advanced management
+                    features, run <em>Launch Cloudera Enterprise (trial)</em> on the Desktop.
+                    This requires at least 10 GB of RAM and at least 2 virtual CPUs.
+                </p>
+
+                <p>
+                    <em>
+                        Be aware that after rebooting, it may take several minutes before Cloudera
+                        Manager has started all of the services it manages and is ready to accept
+                        connects from clients.
+                    </em>
+                </p>
+            </form>
+        </div>
+    </body>
+</html>
+

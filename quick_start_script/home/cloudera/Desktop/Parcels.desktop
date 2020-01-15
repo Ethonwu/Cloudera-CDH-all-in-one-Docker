@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=true
+Exec=sudo /home/cloudera/parcels --pause
+Name=Migrate to Parcels
+Comment=Migrate to Parcels
+Icon=/home/cloudera/Documents/img/glyphicons_069_gift@2x.png
+

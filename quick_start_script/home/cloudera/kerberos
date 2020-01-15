@@ -1,0 +1,177 @@
+#! /usr/bin/env bash
+
+set -e
+
+function terminate() {
+    if [ "${PAUSE}" == 'true' ]; then
+        read -p "Press [Enter] to exit..."
+    fi
+    exit ${1}
+}
+
+function ensure_user_is_root() {
+    if [[ "$EUID" -ne "0" ]]; then
+        echo "You must run this script as root. Try 'sudo ${0} ${@}'."
+        terminate 1
+    fi
+}
+
+function parse_arguments() {
+    for argument in ${@}; do
+        if [ "${argument}" == '--force' ]; then
+            export FORCE='true'
+        elif [ "${argument}" == '--pause' ]; then
+            export PAUSE='true'
+        else
+            echo "Unknown option: ${argument}"
+            terminate 1
+        fi
+    done
+}
+
+function log() {
+    echo "[QuickStart] ${1}"
+}
+
+parse_arguments ${@}
+
+KERBEROS_REALM=${KERBEROS_REALM:-CLOUDERA}
+KERBEROS_DOMAIN=${KERBEROS_DOMAIN:-cloudera}
+KERBEROS_HOSTNAME=${KERBEROS_HOSTNAME:-quickstart.${KERBEROS_DOMAIN}}
+KERBEROS_PRINCIPAL=${KERBEROS_PRINCIPAL:-cloudera-scm/admin}
+KERBEROS_PASSWORD=${KERBEROS_PASSWORD:-cloudera}
+JAVA_HOME=${JAVA_HOME:-/usr/java/jdk1.7.0_*-cloudera}
+
+ensure_user_is_root
+
+# Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files
+# for JDK/JRE 7 must be installed in order to use 256-bit AES encryption
+#if [ ! -e /home/cloudera/Downloads/UnlimitedJCEPolicyJDK7.zip ]; then
+#    echo "You must first download the \"Java Cryptography Extension (JCE) Unlimited"
+#    echo "Strength Jurisdiction Policy Files for JDK/JRE 7\" to /home/cloudera/Downloads."
+#    echo "You can download them here:"
+#    echo ""
+#    echo "    http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+#    echo ""
+#    terminate 2
+#fi
+
+#log 'Unpacking Unlimited JCE policy files...'
+#cd /tmp
+#unzip /home/cloudera/Downloads/UnlimitedJCEPolicyJDK7.zip
+
+#log 'Installing Unlimited JCE policy files...'
+#mv UnlimitedJCEPolicy/*.jar ${JAVA_HOME}/jre/lib/security/
+
+log 'Installing Kerberos...'
+yum install -y krb5-server krb5-workstation openldap
+chkconfig krb5kdc on
+chkconfig kadmin on
+
+touch /var/lib/cloudera-quickstart/.kerberos
+
+log 'Configuring Kerberos...'
+
+cat > /etc/krb5.conf <<EOF
+[logging]
+ default = FILE:/var/log/krb5libs.log
+ kdc = FILE:/var/log/krb5kdc.log
+ admin_server = FILE:/var/log/kadmind.log
+
+[libdefaults]
+ default_realm = ${KERBEROS_REALM}
+ dns_lookup_realm = false
+ dns_lookup_kdc = false
+ ticket_lifetime = 24h
+ renew_lifetime = 7d
+ forwardable = true
+
+[realms]
+ ${KERBEROS_REALM} = {
+  kdc = ${KERBEROS_HOSTNAME}
+  admin_server = ${KERBEROS_HOSTNAME}
+  max_renewable_life = 7d 0h 0m 0s
+  default_principal_flags = +renewable
+ }
+
+[domain_realm]
+ .${KERBEROS_DOMAIN} = ${KERBEROS_REALM}
+ ${KERBEROS_DOMAIN} = ${KERBEROS_REALM}
+EOF
+
+cat > /var/kerberos/krb5kdc/kdc.conf <<EOF
+[kdcdefaults]
+ kdc_ports = 88
+ kdc_tcp_ports = 88
+
+[realms]
+ ${KERBEROS_REALM} = {
+  #master_key_type = aes256-cts
+  acl_file = /var/kerberos/krb5kdc/kadm5.acl
+  dict_file = /usr/share/dict/words
+  admin_keytab = /var/kerberos/krb5kdc/kadm5.keytab
+  # Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files
+  # for JDK/JRE 7 must be installed in order to use 256-bit AES encryption (aes256-cts:normal)
+  supported_enctypes = aes128-cts:normal des3-hmac-sha1:normal arcfour-hmac:normal des-hmac-sha1:normal des-cbc-md5:normal des-cbc-crc:normal max_life = 30d
+  max_renewable_life = 30d
+ }
+EOF
+
+echo "*/admin@${KERBEROS_REALM}  *" > /var/kerberos/krb5kdc/kadm5.acl
+
+log 'Setting root password for Kerberos...'
+expect - <<EOF
+set timeout 60
+
+spawn kdb5_util create -s
+expect "Enter KDC database master key:"
+send "${KERBEROS_PASSWORD}\r"
+expect "Re-enter KDC database master key to verify:"
+send "${KERBEROS_PASSWORD}\r"
+expect eof
+EOF
+
+log 'Creating Kerberos principal...'
+expect - <<EOF
+set timeout 60
+
+spawn kadmin.local -q "addprinc ${KERBEROS_PRINCIPAL}"
+expect "Enter password for principal \"${KERBEROS_PRINCIPAL}@${KERBEROS_REALM}\":"
+send "${KERBEROS_PASSWORD}\r"
+expect "Re-enter password for principal \"${KERBEROS_PRINCIPAL}@${KERBEROS_REALM}\":"
+send "${KERBEROS_PASSWORD}\r"
+expect eof
+EOF
+
+log 'Starting Kerberos services...'
+service krb5kdc start
+service kadmin start
+
+cat <<EOF
+________________________________________________________________________________
+
+Success! Kerberos is now running. You can enable Kerberos in a Cloudera Manager
+cluster from the drop-down menu for that cluster on the CM home page. It will
+ask you to confirm that this script performed the following steps:
+
+    * set up a working KDC.
+    * checked that the KDC allows renewable tickets.
+    * installed the client libraries.
+    * created a proper account for Cloudera Manager.
+
+Then, it will prompt you for the following details (accept defaults if not
+specified here):
+
+    KDC Type:                MIT KDC
+    KDC Server Host:         ${KERBEROS_HOSTNAME}
+    Kerberos Security Realm: ${KERBEROS_REALM}
+
+Later, it will prompt you for KDC account manager credentials:
+
+    Username: ${KERBEROS_PRINCIPAL} (@ ${KERBEROS_REALM})
+    Password: ${KERBEROS_PASSWORD}
+
+EOF
+
+terminate 0
+
