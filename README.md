@@ -17,6 +17,9 @@ docker run --privileged=true -it -p 7180:7180 cloudera:latest
 2. Cloudera Quick start Docker image
 ---
 ## TODO
-* [ ] Hugepage sys kernel setting
+* [x] Hugepage sys kernel setting
+* [x] Location bug fix 
 * [ ] Use CM API install CM Service and All CDH Service and Depoly
+* [ ] Hostname bug 
+* [ ] Python deploy CMS
 * [ ] Upload to Dockerhub , and tag each type of stage , such as : CM Ready , Hive Impala tag , Spark2 Tag ...
