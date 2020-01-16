@@ -1,6 +1,5 @@
 FROM centos:7.3.1611
-ENV TZ=Asia/Taipei
-ENV HOSTNSME ethon.cloudera.com
+ENV HOSTNAME ethon.cloudera.com
 RUN yum -y update; yum clean all
 RUN echo  "vm.swappiness = 1" >> /etc/sysctl.conf
 RUN yum install -y java-1.8.0-openjdk-devel vim wget curl git bind-utils tmux sudo ssh openssh-server 
@@ -20,5 +19,13 @@ RUN cp ~/mysql-connector-java-5.1.46/mysql-connector-java-5.1.46-bin.jar /usr/sh
 RUN rm -rf ~/mysql-connector-java-5.1.46*
 RUN /etc/init.d/mysql start && mysql -u root < /root/script/create_db.sql && mysql -u root < /root/script/secure_mariadb.sql && /usr/share/cmf/schema/scm_prepare_database.sh mysql scm scm cloudera
 RUN chmod +x /root/script/run.sh
+RUN echo "cloudera" | passwd --stdin root 
+RUN /usr/sbin/sshd-keygen -A
+RUN yum install -y epel-release && yum install -y python-pip && pip install --upgrade pip && pip install cm_client
+RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+RUN echo "LANG=en_US.UTF-8" > /etc/locale.config
+RUN localedef -i en_US -f UTF-8 en_US.UTF-8
 EXPOSE 7180
-ENTRYPOINT ["/bin/sh","run.sh"]
+#ENTRYPOINT ["/bin/sh","run.sh"]
+CMD ['/bin/sh']
