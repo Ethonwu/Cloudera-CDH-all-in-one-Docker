@@ -24,13 +24,7 @@ RUN chmod +x /root/script/run.sh
 RUN echo "cloudera" | passwd --stdin root 
 RUN /usr/sbin/sshd-keygen -A
 RUN yum clean all
-RUN yum install -y epel-release 
-#ADD conf/epel-testing.repo /etc/yum.repos.d/
-#ADD conf/epel.repo /etc/yum.repos.d/
-#RUN cat /etc/yum.repos.d/epel-testing.repo
-#RUN cat /etc/yum.repos.d/epel.repo
-#RUN yum update
-#RUN yum install -y python-pip && pip install --upgrade pip && pip install cm_client
+RUN yum install -y epel-release && yum install -y python-pip && pip install --upgrade pip && pip install cm_client
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 RUN echo "LANG=en_US.UTF-8" > /etc/locale.config
