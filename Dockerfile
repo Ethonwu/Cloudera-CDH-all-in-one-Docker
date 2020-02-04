@@ -23,7 +23,14 @@ RUN /etc/init.d/mysql start && mysql -u root < /root/script/create_db.sql && mys
 RUN chmod +x /root/script/run.sh
 RUN echo "cloudera" | passwd --stdin root 
 RUN /usr/sbin/sshd-keygen -A
-RUN yum install -y epel-release && yum install -y python-pip && pip install --upgrade pip && pip install cm_client
+RUN yum clean all
+RUN yum install -y epel-release 
+#ADD conf/epel-testing.repo /etc/yum.repos.d/
+#ADD conf/epel.repo /etc/yum.repos.d/
+#RUN cat /etc/yum.repos.d/epel-testing.repo
+#RUN cat /etc/yum.repos.d/epel.repo
+#RUN yum update
+#RUN yum install -y python-pip && pip install --upgrade pip && pip install cm_client
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 RUN echo "LANG=en_US.UTF-8" > /etc/locale.config
@@ -34,13 +41,12 @@ RUN ls /opt/cloudera/
 RUN mkdir parcel-cache/ parcels/ && mkdir parcels/.flood/
 RUN chmod 755 -R *
 RUN chown cloudera-scm:cloudera-scm -R csd/ parcel-repo/ parcels/.flood/
-#WORKDIR /opt/cloudera/parcel-repo/
-#WORKDIR /root/
-#RUN wget -q  http://archive.cloudera.com/cdh5/parcels/5.16.2/CDH-5.16.2-1.cdh5.16.2.p0.8-el7.parcel && wget -q http://archive.cloudera.com/cdh5/parcels/5.16.2/CDH-5.16.2-1.cdh5.16.2.p0.8-el7.parcel.sha1 && wget -q http://archive.cloudera.com/cdh5/parcels/5.16.2/manifest.json
-#WORKDIR /opt/cloudera/parcel-repo/
-#RUN chown cloudera-scm:cloudera-scm -R *
-#RUN chmod 755 *
 EXPOSE 7180
 WORKDIR /root/
+RUN ssh-keygen -f ~/myRSAkey -t rsa -N ""
+RUN mkdir ~/.ssh
+RUN cat ~/myRSAkey.pub >> ~/.ssh/authorized_keys
+RUN chmod 400 ~/.ssh/authorized_keys
+
 #ENTRYPOINT ["/bin/sh","run.sh"]
 CMD ['/bin/sh']
