@@ -15,7 +15,7 @@ import re
 import os
 import sys
 import pprint
-import subprocess
+from subprocess import Popen, PIPE, STDOUT
 import socket
 
 CMD_TIMEOUT = 180
@@ -536,6 +536,9 @@ def deploy_impala(cluster, impala_service_name, impala_service_config, impala_ss
 def post_startup(cluster, hdfs_service):
     # Create HDFS temp dir
     hdfs_service.create_hdfs_tmp()
+    cmd = cluster.deploy_client_config()
+    if not cmd.wait(CMD_TIMEOUT).success:
+       print "Failed to deploy client configs for {0}".format(cluster.name)
     
     # Create hive warehouse dir
     shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u "' + cm_username + ':' + cm_password + '" -d "serviceName=' + HIVE_SERVICE_NAME + ';clusterName=' + cluster_name + '" http://' + cm_host + ':7180/api/v5/clusters/' + cluster_name + '/services/' + HIVE_SERVICE_NAME + '/commands/hiveCreateHiveWarehouse']
@@ -612,7 +615,7 @@ def main():
     print "Deployed Impala service " + IMPALA_SERVICE_NAME + " using StateStore on " + IMPALA_SS_HOST + ", CatalogServer on " + IMPALA_CS_HOST + ", and ImpalaDaemons on "
     PRETTY_PRINT.pprint(IMPALA_ID_HOSTS)
     
-    CLUSTER.stop().wait()
+    #CLUSTER.stop().wait()
     CLUSTER.start().wait()
     #post_startup(CLUSTER, hdfs_service, oozie_service)
     post_startup(CLUSTER, hdfs_service)
