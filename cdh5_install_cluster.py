@@ -536,7 +536,7 @@ def post_startup(cluster, hdfs_service):
     hdfs_service.create_hdfs_tmp()
     
     # Create hive warehouse dir
-    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u "' + ADMIN_USER + ':' + ADMIN_PASS + '" -d "serviceName=' + HIVE_SERVICE_NAME + ';clusterName=' + CLUSTER_NAME + '" http://' + CM_HOST + ':7180/api/v5/clusters/' + CLUSTER_NAME + '/services/' + HIVE_SERVICE_NAME + '/commands/hiveCreateHiveWarehouse']
+    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u "' + cm_username + ':' + cm_password + '" -d "serviceName=' + HIVE_SERVICE_NAME + ';clusterName=' + CLUSTER_NAME + '" http://' + cm_host + ':7180/api/v5/clusters/' + cluster_name + '/services/' + HIVE_SERVICE_NAME + '/commands/hiveCreateHiveWarehouse']
     create_hive_warehouse_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
     
     # Create oozie database
