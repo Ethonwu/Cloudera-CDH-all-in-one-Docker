@@ -15,6 +15,8 @@ import re
 import os
 import sys
 import pprint
+import subprocess
+import socket
 
 CMD_TIMEOUT = 180
 cm_host = "localhost"
@@ -381,8 +383,8 @@ def deploy_hdfs(cluster, hdfs_service_name, hdfs_config, hdfs_nn_service_name, h
     dn_role_group = hdfs_service.get_role_config_group("{0}-DATANODE-BASE".format(hdfs_service_name))
     dn_role_group.update_config(hdfs_dn_config)
 
-    gw_role_group = hdfs_service.get_role_config_group("{0}-GATEWAY-BASE".format(hdfs_service_name))
-    gw_role_group.update_config(hdfs_gw_config)
+    #gw_role_group = hdfs_service.get_role_config_group("{0}-GATEWAY-BASE".format(hdfs_service_name))
+    #gw_role_group.update_config(hdfs_gw_config)
 
     datanode = 0
     for host in hdfs_dn_hosts:
@@ -536,7 +538,7 @@ def post_startup(cluster, hdfs_service):
     hdfs_service.create_hdfs_tmp()
     
     # Create hive warehouse dir
-    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u "' + cm_username + ':' + cm_password + '" -d "serviceName=' + HIVE_SERVICE_NAME + ';clusterName=' + CLUSTER_NAME + '" http://' + cm_host + ':7180/api/v5/clusters/' + cluster_name + '/services/' + HIVE_SERVICE_NAME + '/commands/hiveCreateHiveWarehouse']
+    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u "' + cm_username + ':' + cm_password + '" -d "serviceName=' + HIVE_SERVICE_NAME + ';clusterName=' + cluster_name + '" http://' + cm_host + ':7180/api/v5/clusters/' + cluster_name + '/services/' + HIVE_SERVICE_NAME + '/commands/hiveCreateHiveWarehouse']
     create_hive_warehouse_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
     
     # Create oozie database
