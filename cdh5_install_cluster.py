@@ -126,7 +126,8 @@ ZOOKEEPER_ROLE_CONFIG = {
 HDFS_SERVICE_NAME = "HDFS"
 HDFS_SERVICE_CONFIG = {
   'dfs_replication': 1,
-  'dfs_permissions': 'true',
+  'dfs_permissions': 'false',
+  #'dfs_permissions': 'true',
   'dfs_block_local_path_access_user': 'impala,hbase,mapred,spark',
   'zookeeper_service': ZOOKEEPER_SERVICE_NAME,
 }
@@ -529,6 +530,31 @@ def deploy_impala(cluster, impala_service_name, impala_service_config, impala_ss
     
     return impala_service
 
+#def post_startup(cluster, hdfs_service, oozie_service):
+def post_startup(cluster, hdfs_service):
+    # Create HDFS temp dir
+    hdfs_service.create_hdfs_tmp()
+    
+    # Create hive warehouse dir
+    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u "' + ADMIN_USER + ':' + ADMIN_PASS + '" -d "serviceName=' + HIVE_SERVICE_NAME + ';clusterName=' + CLUSTER_NAME + '" http://' + CM_HOST + ':7180/api/v5/clusters/' + CLUSTER_NAME + '/services/' + HIVE_SERVICE_NAME + '/commands/hiveCreateHiveWarehouse']
+    create_hive_warehouse_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
+    
+    # Create oozie database
+    #oozie_service.stop().wait()
+    #shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u "' + ADMIN_USER + ':' + ADMIN_PASS + '" -d "serviceName=' + OOZIE_SERVICE_NAME + ';clusterName=' + CLUSTER_NAME + '" http://' + CM_HOST + ':7180/api/v5/clusters/' + CLUSTER_NAME + '/services/' + OOZIE_SERVICE_NAME + '/commands/createOozieDb']
+    #create_oozie_db_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
+    ## give the create db command time to complete
+    #time.sleep(30)
+    #oozie_service.start().wait()
+    
+    # Deploy client configs to all necessary hosts
+    cmd = cluster.deploy_client_config()
+    if not cmd.wait(CMD_TIMEOUT).success:
+       print "Failed to deploy client configs for {0}".format(cluster.name)
+    
+    # Noe change permissions on the /user dir so YARN will work
+    shell_command = ['sudo -u hdfs hadoop fs -chmod 775 /user']
+    user_chmod_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
 
 def main():
     api = ApiResource(cm_host, cm_port, cm_username, cm_password, version=api_num)
@@ -583,6 +609,11 @@ def main():
     impala_service = deploy_impala(CLUSTER, IMPALA_SERVICE_NAME, IMPALA_SERVICE_CONFIG, IMPALA_SS_HOST, IMPALA_SS_CONFIG, IMPALA_CS_HOST, IMPALA_CS_CONFIG, IMPALA_ID_HOSTS, IMPALA_ID_CONFIG)
     print "Deployed Impala service " + IMPALA_SERVICE_NAME + " using StateStore on " + IMPALA_SS_HOST + ", CatalogServer on " + IMPALA_CS_HOST + ", and ImpalaDaemons on "
     PRETTY_PRINT.pprint(IMPALA_ID_HOSTS)
+    
+    CLUSTER.stop().wait()
+    CLUSTER.start().wait()
+    #post_startup(CLUSTER, hdfs_service, oozie_service)
+    post_startup(CLUSTER, hdfs_service)
  
 if __name__ == "__main__":
      main()
