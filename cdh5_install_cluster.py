@@ -130,7 +130,7 @@ HDFS_SERVICE_CONFIG = {
   'dfs_replication': 1,
   'dfs_permissions': 'false',
   #'dfs_permissions': 'true',
-  #'dfs_block_local_path_access_user': 'impala,hbase,mapred,spark',
+  'dfs_block_local_path_access_user': 'impala,hbase,mapred,spark',
   'zookeeper_service': ZOOKEEPER_SERVICE_NAME,
 }
 HDFS_NAMENODE_SERVICE_NAME = "nn"
@@ -536,13 +536,18 @@ def deploy_impala(cluster, impala_service_name, impala_service_config, impala_ss
 def post_startup(cluster, hdfs_service):
     # Create HDFS temp dir
     hdfs_service.create_hdfs_tmp()
-    cmd = cluster.deploy_client_config()
-    if not cmd.wait(CMD_TIMEOUT).success:
-       print "Failed to deploy client configs for {0}".format(cluster.name)
+    #cmd = cluster.deploy_client_config()
+    #if not cmd.wait(CMD_TIMEOUT).success:
+    #   print "Failed to deploy client configs for {0}".format(cluster.name)
     
     # Create hive warehouse dir
-    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u "' + cm_username + ':' + cm_password + '" -d "serviceName=' + HIVE_SERVICE_NAME + ';clusterName=' + cluster_name + '" http://' + cm_host + ':7180/api/v5/clusters/' + cluster_name + '/services/' + HIVE_SERVICE_NAME + '/commands/hiveCreateHiveWarehouse']
+    #shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u "' + cm_username + ':' + cm_password + '" -d "serviceName=' + HIVE_SERVICE_NAME + ';clusterName=' + cluster_name + '" http://' + cm_host + ':7180/api/v19/clusters/' + cluster_name + '/services/' + HIVE_SERVICE_NAME + '/commands/hiveCreateHiveWarehouse']
+    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u ' + cm_username + ':' + cm_password + ' http://'+cm_host + ':' + str(cm_port) + '/api/v' + str(api_num) +'/clusters/'+cluster_name+'/services/'+HIVE_SERVICE_NAME+'/commands/hiveCreateHiveUserDir']
     create_hive_warehouse_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
+    print "Output hiveCreateHiveUserDir result " , create_hive_warehouse_output
+    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u ' + cm_username + ':' + cm_password + ' http://'+cm_host + ':' + str(cm_port)+ '/api/v' + str(api_num) +'/clusters/'+cluster_name+'/services/'+HIVE_SERVICE_NAME+'/commands/hiveCreateHiveWarehouse']
+    create_hive_warehouse_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
+    print "Output hiveCreateHiveWarehouse result " , create_hive_warehouse_output
     
     # Create oozie database
     #oozie_service.stop().wait()
