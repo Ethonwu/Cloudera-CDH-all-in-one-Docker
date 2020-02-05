@@ -128,7 +128,7 @@ HDFS_SERVICE_CONFIG = {
   'dfs_replication': 1,
   'dfs_permissions': 'false',
   #'dfs_permissions': 'true',
-  'dfs_block_local_path_access_user': 'impala,hbase,mapred,spark',
+  #'dfs_block_local_path_access_user': 'impala,hbase,mapred,spark',
   'zookeeper_service': ZOOKEEPER_SERVICE_NAME,
 }
 HDFS_NAMENODE_SERVICE_NAME = "nn"
