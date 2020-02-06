@@ -24,7 +24,7 @@ RUN chmod +x /root/script/run.sh
 RUN echo "cloudera" | passwd --stdin root 
 RUN /usr/sbin/sshd-keygen -A
 RUN yum clean all
-RUN yum install -y epel-release && yum install -y python-pip && pip install --upgrade pip && pip install cm_client
+RUN yum install -y epel-release && yum install -y python-pip && pip install --upgrade pip && pip install cm_client cm_api
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 RUN echo "LANG=en_US.UTF-8" > /etc/locale.config
@@ -41,6 +41,6 @@ RUN ssh-keygen -f ~/myRSAkey -t rsa -N ""
 RUN mkdir ~/.ssh
 RUN cat ~/myRSAkey.pub >> ~/.ssh/authorized_keys
 RUN chmod 400 ~/.ssh/authorized_keys
-
-#ENTRYPOINT ["/bin/sh","run.sh"]
-CMD ['/bin/sh']
+WORKDIR /root/script
+ENTRYPOINT ["/bin/sh","run.sh"]
+#CMD ['/bin/sh']
