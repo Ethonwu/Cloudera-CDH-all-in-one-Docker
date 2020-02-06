@@ -43,4 +43,3 @@ RUN cat ~/myRSAkey.pub >> ~/.ssh/authorized_keys
 RUN chmod 400 ~/.ssh/authorized_keys
 WORKDIR /root/script
 ENTRYPOINT ["/bin/sh","run.sh"]
-#CMD ['/bin/sh']
