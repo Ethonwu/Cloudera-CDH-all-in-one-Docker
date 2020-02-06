@@ -9,11 +9,14 @@ echo never > /sys/kernel/mm/transparent_hugepage/defrag
 /etc/init.d/mysql start
 /etc/init.d/cloudera-scm-agent start
 /etc/init.d/cloudera-scm-server start 
-tailf /var/log/cloudera-scm-server/cloudera-scm-server.log
-#while [ `curl -s -X GET -u "admin:admin"  http://localhost:7180/api/version` -z ] ;
-#    do
-#    echo "waiting 10s for CM to come up..";
-#    sleep 10;
-#done
+#tailf /var/log/cloudera-scm-server/cloudera-scm-server.log
+while [ `curl -s -X GET -u "admin:admin"  http://localhost:7180/api/version` -z ] ;
+    do
+    echo "waiting 10s for CM to come up..";
+    sleep 10;
+done
+python2.7 cdh5_install_cluster.py
 #python2.7 create_cluster.py ./cm-deployment.json 
 #sh ./CM_service_change.sh stop 
+#tailf /var/log/cloudera-scm-server/cloudera-scm-server.log
+exec bash
