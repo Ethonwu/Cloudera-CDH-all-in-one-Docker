@@ -9,7 +9,7 @@
 ```bash
 docker build . -t cloudera
 docker volume create --name cloudera
-docker run -v cloudera:/opt/ --privileged=true --sysctl net.ipv6.conf.all.disable_ipv6=1 -it -p 7180:7180 cloudera
+docker run -v cloudera:/opt/ --privileged=true --sysctl net.ipv6.conf.all.disable_ipv6=1 -it -p 7180:7180 -p 8888:8888 cloudera
 ```
 ---
 ## Reference 
@@ -23,4 +23,5 @@ docker run -v cloudera:/opt/ --privileged=true --sysctl net.ipv6.conf.all.disabl
 * [x] Use CM API install CM Service and All CDH Service and Depoly
 * [x] Hostname bug 
 * [x] Python deploy CMS
-* [ ] Upload to Dockerhub , and tag each type of stage , such as : CM Ready , Hive Impala tag , Spark2 Tag ...
+* [x] Upload to Dockerhub 
+* [ ] Tag each type of stage , such as : CM Ready , Hive Impala tag , Spark2 Tag ...
