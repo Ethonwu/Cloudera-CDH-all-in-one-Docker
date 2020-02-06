@@ -280,6 +280,41 @@ IMPALA_CS_CONFIG = { }
 IMPALA_ID_HOSTS = host_list
 IMPALA_ID_CONFIG = { }
 
+
+### Oozie ###
+OOZIE_SERVICE_NAME = "OOZIE"
+OOZIE_SERVICE_CONFIG = {
+  'mapreduce_yarn_service': YARN_SERVICE_NAME,
+}
+OOZIE_SERVER_HOST = host_list[0]
+OOZIE_SERVER_CONFIG = { 
+   'oozie_java_heapsize': 207881018,
+   'oozie_database_host': host_list[0],
+   'oozie_database_name': 'oozie',
+   'oozie_database_password': HIVE_METASTORE_PASSWORD,
+   'oozie_database_type': 'mysql',
+   'oozie_database_user': 'oozie',
+}
+
+### HUE ###
+HUE_SERVICE_NAME = "HUE"
+HUE_SERVICE_CONFIG = {
+  'hive_service': HIVE_SERVICE_NAME,
+  'hbase_service': HBASE_SERVICE_NAME,
+  'impala_service': IMPALA_SERVICE_NAME,
+  'oozie_service': OOZIE_SERVICE_NAME,
+  #'sqoop_service': SQOOP_SERVICE_NAME,
+  'hue_webhdfs': HDFS_SERVICE_NAME + "-" + HDFS_NAMENODE_SERVICE_NAME,
+  #'hue_hbase_thrift': HBASE_SERVICE_NAME + "-" + HBASE_THRIFTSERVER_SERVICE_NAME,
+}
+HUE_SERVER_HOST = host_list[0]
+HUE_SERVER_CONFIG = { 
+   #'hue_server_hue_safety_valve': '[search]\r\n## URL of the Solr Server\r\nsolr_url=http://' + SEARCH_SOLR_HOST + ':8983/solr',
+}
+HUE_KTR_HOST = host_list[0]
+HUE_KTR_CONFIG = { }
+
+
 def deploy_management(manager, mgmt_servicename, mgmt_service_conf, mgmt_role_conf, amon_role_name, amon_role_conf, apub_role_name, apub_role_conf, eserv_role_name, eserv_role_conf, hmon_role_name, hmon_role_conf, smon_role_name, smon_role_conf, nav_role_name, nav_role_conf, navms_role_name, navms_role_conf, rman_role_name, rman_role_conf):
     mgmt = manager.create_mgmt_service(ApiServiceSetupInfo())
     
@@ -538,9 +573,36 @@ def deploy_impala(cluster, impala_service_name, impala_service_config, impala_ss
     #impala_service.create_impala_user_dir()
     
     return impala_service
+# Deploys Oozie - oozie server.
+# This does not support HA yet.
+def deploy_oozie(cluster, oozie_service_name, oozie_service_config, oozie_server_host, oozie_server_config):
+    oozie_service = cluster.create_service(oozie_service_name, "OOZIE")
+    oozie_service.update_config(oozie_service_config)
+    
+    oozie_server = oozie_service.get_role_config_group("{0}-OOZIE_SERVER-BASE".format(oozie_service_name))
+    oozie_server.update_config(oozie_server_config)
+    oozie_service.create_role("{0}-server".format(oozie_service_name), "OOZIE_SERVER", oozie_server_host)
+    
+    oozie_service.install_oozie_sharelib()
+    
+    return oozie_service
+# Deploys HUE - hue server
+def deploy_hue(cluster, hue_service_name, hue_service_config, hue_server_host, hue_server_config, hue_ktr_host, hue_ktr_config):
+    hue_service = cluster.create_service(hue_service_name, "HUE")
+    hue_service.update_config(hue_service_config)
+    
+    hue_server = hue_service.get_role_config_group("{0}-HUE_SERVER-BASE".format(hue_service_name))
+    hue_server.update_config(hue_server_config)
+    hue_service.create_role("{0}-server".format(hue_service_name), "HUE_SERVER", hue_server_host)
+    
+    #ktr = hue_service.get_role_config_group("{0}-KT_RENEWER-BASE".format(hue_service_name))
+    #ktr.update_config(hue_ktr_config)
+    #hue_service.create_role("{0}-ktr".format(hue_service_name), "KT_RENEWER", hue_ktr_host)
+    
+    return hue_service
 
-#def post_startup(cluster, hdfs_service, oozie_service):
-def post_startup(cluster, hdfs_service):
+def post_startup(cluster, hdfs_service, oozie_service):
+#def post_startup(cluster, hdfs_service):
     # Create HDFS temp dir
     hdfs_service.create_hdfs_tmp()
     #cmd = cluster.deploy_client_config()
@@ -559,12 +621,14 @@ def post_startup(cluster, hdfs_service):
     print "create_hive_warehouse_output command is ", shell_command
     
     # Create oozie database
-    #oozie_service.stop().wait()
+    oozie_service.stop().wait()
     #shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u "' + ADMIN_USER + ':' + ADMIN_PASS + '" -d "serviceName=' + OOZIE_SERVICE_NAME + ';clusterName=' + CLUSTER_NAME + '" http://' + CM_HOST + ':7180/api/v5/clusters/' + CLUSTER_NAME + '/services/' + OOZIE_SERVICE_NAME + '/commands/createOozieDb']
-    #create_oozie_db_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
+    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u ' + cm_username + ':' + cm_password + ' http://'+cm_host + ':' + str(cm_port)+ '/api/v' + str(api_num) +'/clusters/'+ str(urllib.quote(cluster_name))+'/services/'+ str(urllib.quote(OOZIE_SERVICE_NAME))  +'/commands/createOozieDb']
+    create_oozie_db_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
+    print "create_oozie_db_output : ",create_oozie_db_output
     ## give the create db command time to complete
-    #time.sleep(30)
-    #oozie_service.start().wait()
+    time.sleep(30)
+    oozie_service.start().wait()
     
     # Deploy client configs to all necessary hosts
     cmd = cluster.deploy_client_config()
@@ -634,7 +698,20 @@ def main():
     #CLUSTER.stop().wait()
     CLUSTER.start().wait()
     #post_startup(CLUSTER, hdfs_service, oozie_service)
-    post_startup(CLUSTER, hdfs_service)
+    
+    oozie_service = deploy_oozie(CLUSTER, OOZIE_SERVICE_NAME, OOZIE_SERVICE_CONFIG, OOZIE_SERVER_HOST, OOZIE_SERVER_CONFIG)
+    print "Deployed Oozie service " + OOZIE_SERVICE_NAME + " using OozieServer on " + OOZIE_SERVER_HOST    
+
+    hue_service = deploy_hue(CLUSTER, HUE_SERVICE_NAME, HUE_SERVICE_CONFIG, HUE_SERVER_HOST, HUE_SERVER_CONFIG, HUE_KTR_HOST, HUE_KTR_CONFIG)
+    print "Deployed HUE service " + HUE_SERVICE_NAME + " using HueServer on " + HUE_SERVER_HOST
+
+    #post_startup(CLUSTER, hdfs_service)
+    print "About to restart cluster."
+    CLUSTER.stop().wait()
+    CLUSTER.start().wait()
+    print "Done restarting cluster."
+    
+    post_startup(CLUSTER, hdfs_service, oozie_service)
  
 if __name__ == "__main__":
      main()
