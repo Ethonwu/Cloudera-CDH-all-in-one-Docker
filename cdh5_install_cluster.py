@@ -14,6 +14,7 @@ import time
 import re
 import os
 import sys
+import urllib
 import pprint
 from subprocess import Popen, PIPE, STDOUT
 import socket
@@ -63,7 +64,10 @@ AMON_ROLE_CONFIG = {
     'firehose_database_name': 'amon',
     'firehose_heapsize': '1000000000',
     'max_log_backup_index':'1',
-    'max_log_size' : '1'
+    'max_log_size' : '1',
+    #'timeseries.expiration.hours' : '1',
+    #'firehose.activity.purge.duration.hours':'1',
+    #'firehose.attempt.purge.duration.hours' : '1',
 }
 APUB_ROLENAME = "ALERTPUBLISHER"
 APUB_ROLE_CONFIG = { }
@@ -130,8 +134,11 @@ HDFS_SERVICE_CONFIG = {
   'dfs_replication': 1,
   'dfs_permissions': 'false',
   #'dfs_permissions': 'true',
-  'dfs_block_local_path_access_user': 'impala,hbase,mapred,spark',
+  'dfs_block_local_path_access_user': 'impala,hbase,mapred,spark,root,hive',
   'zookeeper_service': ZOOKEEPER_SERVICE_NAME,
+   #'dfs_permissions_supergroup':'hdfs',
+   #'dfs_namenode_acls_enabled':'true',
+
 }
 HDFS_NAMENODE_SERVICE_NAME = "nn"
 HDFS_NAMENODE_HOST = host_list[0]
@@ -139,8 +146,8 @@ HDFS_NAMENODE_CONFIG = {
   #'dfs_name_dir_list': '/data01/hadoop/namenode',
   'dfs_name_dir_list': HADOOP_DATA_DIR_PREFIX + '/namenode',
   'dfs_namenode_handler_count': 30, #int(ln(len(DATANODES))*20),
-    'max_log_backup_index' :'1',
-    'max_log_size' : '1'
+  'max_log_backup_index' :'1',
+  'max_log_size' : '1'
 }
 HDFS_SECONDARY_NAMENODE_HOST = host_list[0]
 HDFS_SECONDARY_NAMENODE_CONFIG = {
@@ -383,8 +390,8 @@ def deploy_hdfs(cluster, hdfs_service_name, hdfs_config, hdfs_nn_service_name, h
     dn_role_group = hdfs_service.get_role_config_group("{0}-DATANODE-BASE".format(hdfs_service_name))
     dn_role_group.update_config(hdfs_dn_config)
 
-    #gw_role_group = hdfs_service.get_role_config_group("{0}-GATEWAY-BASE".format(hdfs_service_name))
-    #gw_role_group.update_config(hdfs_gw_config)
+    gw_role_group = hdfs_service.get_role_config_group("{0}-GATEWAY-BASE".format(hdfs_service_name))
+    gw_role_group.update_config(hdfs_gw_config)
 
     datanode = 0
     for host in hdfs_dn_hosts:
@@ -432,8 +439,8 @@ def deploy_yarn(cluster, yarn_service_name, yarn_service_config, yarn_rm_host, y
        yarn_service.create_role("{0}-gw-".format(yarn_service_name) + str(gateway), "GATEWAY", host)
     
     #TODO need api version 6 for these, but I think they are done automatically?
-    #yarn_service.create_yarn_job_history_dir()
-    #yarn_service.create_yarn_node_manager_remote_app_log_dir()
+    yarn_service.create_yarn_job_history_dir()
+    yarn_service.create_yarn_node_manager_remote_app_log_dir()
     
     return yarn_service
 
@@ -542,12 +549,14 @@ def post_startup(cluster, hdfs_service):
     
     # Create hive warehouse dir
     #shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u "' + cm_username + ':' + cm_password + '" -d "serviceName=' + HIVE_SERVICE_NAME + ';clusterName=' + cluster_name + '" http://' + cm_host + ':7180/api/v19/clusters/' + cluster_name + '/services/' + HIVE_SERVICE_NAME + '/commands/hiveCreateHiveWarehouse']
-    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u ' + cm_username + ':' + cm_password + ' http://'+cm_host + ':' + str(cm_port) + '/api/v' + str(api_num) +'/clusters/'+cluster_name+'/services/'+HIVE_SERVICE_NAME+'/commands/hiveCreateHiveUserDir']
+    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u ' + cm_username + ':' + cm_password + ' http://'+cm_host + ':' + str(cm_port) + '/api/v' + str(api_num) +'/clusters/'+str(urllib.quote(cluster_name)) +'/services/'+str(urllib.quote(HIVE_SERVICE_NAME))+'/commands/hiveCreateHiveUserDir']
     create_hive_warehouse_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
     print "Output hiveCreateHiveUserDir result " , create_hive_warehouse_output
-    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u ' + cm_username + ':' + cm_password + ' http://'+cm_host + ':' + str(cm_port)+ '/api/v' + str(api_num) +'/clusters/'+cluster_name+'/services/'+HIVE_SERVICE_NAME+'/commands/hiveCreateHiveWarehouse']
+    print "hiveCreateHiveUserDiar command is  : " ,shell_command
+    shell_command = ['curl -i -H "Content-Type: application/json" -X POST -u ' + cm_username + ':' + cm_password + ' http://'+cm_host + ':' + str(cm_port)+ '/api/v' + str(api_num) +'/clusters/'+ str(urllib.quote(cluster_name))+'/services/'+ str(urllib.quote(HIVE_SERVICE_NAME))  +'/commands/hiveCreateHiveWarehouse']
     create_hive_warehouse_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
     print "Output hiveCreateHiveWarehouse result " , create_hive_warehouse_output
+    print "create_hive_warehouse_output command is ", shell_command
     
     # Create oozie database
     #oozie_service.stop().wait()
@@ -563,8 +572,10 @@ def post_startup(cluster, hdfs_service):
        print "Failed to deploy client configs for {0}".format(cluster.name)
     
     # Noe change permissions on the /user dir so YARN will work
-    shell_command = ['sudo -u hdfs hadoop fs -chmod 775 /user']
-    user_chmod_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
+    #shell_command = ['sudo -u hdfs hdfs dfs -chmod 775 /user']
+    #shell_command = ['/opt/cloudera/parcels/CDH-5.16.2-1.cdh5.16.2.p0.8/lib/hadoop/libexec']
+    #user_chmod_output = Popen(shell_command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True).stdout.read()
+    #print "user_chmod_output : ",user_chmod_output
 
 def main():
     api = ApiResource(cm_host, cm_port, cm_username, cm_password, version=api_num)
