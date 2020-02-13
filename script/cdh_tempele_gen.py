@@ -57,7 +57,7 @@ variables = [
 hostTemplates = [
  { "refName" : "HostTemplate-0-from-ethon.cloudera.com",
    "cardinality" : 1,
-   "roleConfigGroupsRefNames" : [ "hbase-MASTER-BASE", "hbase-REGIONSERVER-BASE", "hdfs-DATANODE-BASE", "hdfs-NAMENODE-BASE", "hdfs-SECONDARYNAMENODE-BASE", "hive-GATEWAY-BASE", "hive-HIVEMETASTORE-BASE", "hive-HIVESERVER2-BASE", "hue-HUE_LOAD_BALANCER-BASE", "hue-HUE_SERVER-BASE", "impala-CATALOGSERVER-BASE", "impala-IMPALAD-BASE", "impala-STATESTORE-BASE", "oozie-OOZIE_SERVER-BASE", "spark2_on_yarn-SPARK2_YARN_HISTORY_SERVER-BASE", "yarn-JOBHISTORY-BASE", "yarn-NODEMANAGER-BASE", "yarn-RESOURCEMANAGER-BASE", "zookeeper-SERVER-BASE" ]
+   "roleConfigGroupsRefNames" : [ "hbase-MASTER-BASE", "hbase-REGIONSERVER-BASE", "hdfs-DATANODE-BASE", "hdfs-NAMENODE-BASE", "hdfs-SECONDARYNAMENODE-BASE", "hive-GATEWAY-BASE", "hive-HIVEMETASTORE-BASE", "hive-HIVESERVER2-BASE", "hue-HUE_LOAD_BALANCER-BASE", "hue-HUE_SERVER-BASE", "impala-CATALOGSERVER-BASE", "impala-IMPALAD-BASE", "impala-STATESTORE-BASE", "oozie-OOZIE_SERVER-BASE", "spark2_on_yarn-SPARK2_YARN_HISTORY_SERVER-BASE", "yarn-JOBHISTORY-BASE", "yarn-NODEMANAGER-BASE", "yarn-RESOURCEMANAGER-BASE", "zookeeper-SERVER-BASE","flume-AGENT-BASE" ]
   }
 ]
 
@@ -143,7 +143,8 @@ secondarynamenode_roleConfigGroups = {
 
 hdfs_datanode_config = [
 
-{"name":"dfs_data_dir_list", "value" : "opt/dfs/dn"}
+{"name":"dfs_data_dir_list", "value" : "opt/dfs/dn"},
+{"name":"dfs_datanode_failed_volumes_tolerated" , "value":"0"}
 # if two path "value" : "/xxx/xxx/xxx , /xxx/xx/xxx"
 ]
 
@@ -474,6 +475,118 @@ hue_server_roleConfigGroups = {
 }
 
 
+#### HUE_LOAD_BALANCER ####
+
+hue_loadbalancer_config = []
+
+loadblancer_roleConfigGroups = {
+    "refName" : "hue-HUE_LOAD_BALANCER-BASE" ,
+    "roleType" : "HUE_LOAD_BALANCER" , 
+    "config" : hue_loadbalancer_config ,
+    "base" : "true"
+}
+
+#### Hue Main Service ####
+
+hue_roleConfigGroups = []
+hue_roleConfigGroups.append(hue_server_roleConfigGroups)
+hue_roleConfigGroups.append(loadblancer_roleConfigGroups)
+
+hue_service_config = [
+        { "name":"database_password", "variables": "hue-database_passwor"},
+        { "name":"database_type", "variables":"hue-database_type"},
+        { "name":"database_host", "variables":"hue-database_host" }
+]
+
+hue = {
+"refName" : "hue",
+"serviceType" : "HUE",
+"serviceConfigs" : hue_service_config,
+"roleConfigGroups" : hue_roleConfigGroups
+}
+
+### SPARK2 ###
+
+
+#### SPARK2 HISTORY SERVER ####
+
+spark2_hissrv_config = []
+
+spark2_hissrv_roleConfigGroups = {
+    "refName" : "spark2_on_yarn-SPARK2_YARN_HISTORY_SERVER-BASE" ,
+    "roleType" : "SPARK2_YARN_HISTORY_SERVER" , 
+    "config" : spark2_hissrv_config ,
+    "base" : "true"
+}
+
+#### SPARK2 GATEWAY ####
+
+#### Not get config XD
+
+
+#### Spark2 Main Service ####
+
+
+spark2_roleConfigGroups = []
+
+spark2_roleConfigGroups.append(spark2_hissrv_roleConfigGroups)
+
+
+spark2_service_config = [
+        {"name":"yarn_service" ,"value": "yarn"},
+        {"name":"hive_service", "value": "Hive"}
+]
+
+spark2 = {
+"refName" : "spark2_on_yarn",
+"serviceType" : "SPARK2_ON_YARN",
+"serviceConfigs" : spark2_service_config,
+"roleConfigGroups" : spark2_roleConfigGroups
+}
+
+
+
+###  Flume Service ###
+
+#### Flume agent ####
+
+flume_agent_config = [] 
+
+flume_agent_roleConfigGroups = {
+    "refName" : "flume-AGENT-BASE" ,
+    "roleType" : "AGENT" , 
+    "config" : flume_agent_config ,
+    "base" : "true"
+
+}
+
+
+### Flume Main Service ###
+
+
+flume_service_roleConfigGroups = []
+flume_service_roleConfigGroups.append(flume_agent_roleConfigGroups)
+
+
+flume_config = [
+        {"name": "hdfs_service","value"}
+        ]
+
+
+flume = {
+"refName" : "flume",
+"serviceType" : "FLUME",
+"serviceConfigs" : spark2_service_config,
+"roleConfigGroups" : spark2_roleConfigGroups
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -486,6 +599,8 @@ service.append(hive)
 service.append(impala)
 service.append(oozie)
 service.append(hbase)
+service.append(hue)
+service.append(spark2)
 
 template['service'] = service
 
