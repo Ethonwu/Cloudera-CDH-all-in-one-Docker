@@ -1,3 +1,4 @@
+export HADOOP_USER_NAME="hdfs"
 hive -e "CREATE TABLE justin(id INT, name STRING) ROW FORMAT DELIMITED FIELDS TERMINATED BY ' ' STORED AS TEXTFILE;"
 echo "1 justin" > /tmp/test
 hadoop fs -put /tmp/test /user/hive/warehouse/justin/
