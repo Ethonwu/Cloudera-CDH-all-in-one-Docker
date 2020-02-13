@@ -88,7 +88,7 @@
         "value" : "/opt/dfs/dn"
       } ,
                  {
-         "name": "dfs.datanode.failed.volumes.tolerated", 
+         "name": "dfs_datanode_failed_volumes_tolerated", 
          "value" : "0"
        }
 	],
