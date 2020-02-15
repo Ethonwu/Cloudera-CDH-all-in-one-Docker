@@ -22,4 +22,7 @@ python2.7 create_cluster.py
 #curl -X POST -u admin:admin -H "Content-Type: application/json" -d @cdh5_service_template.json http://127.0.0.1:7180/api/v19/cm/importClusterTemplate?addRepositories=true
 curl -X POST -u admin:admin -H "Content-Type: application/json" -d @new.json http://127.0.0.1:7180/api/v19/cm/importClusterTemplate?addRepositories=true
 #sh ./CM_service_change.sh stop 
+sudo -u hdfs hdfs dfs -mkdir /user/root
+sudo -u hdfs hdfs dfs -chown root:root /user/root
+sudo -u hdfs hdfs dfs -chnod 755 /user
 exec bash
