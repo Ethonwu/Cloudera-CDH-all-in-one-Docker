@@ -19,6 +19,7 @@ while [ `curl -s -X GET -u "admin:admin"  http://localhost:7180/api/version` -z 
     sleep 10;
 done
 python2.7 create_cluster.py
-curl -X POST -u admin:admin -H "Content-Type: application/json" -d @cdh5_service_template.json http://127.0.0.1:7180/api/v19/cm/importClusterTemplate?addRepositories=true
+#curl -X POST -u admin:admin -H "Content-Type: application/json" -d @cdh5_service_template.json http://127.0.0.1:7180/api/v19/cm/importClusterTemplate?addRepositories=true
+curl -X POST -u admin:admin -H "Content-Type: application/json" -d @new.json http://127.0.0.1:7180/api/v19/cm/importClusterTemplate?addRepositories=true
 #sh ./CM_service_change.sh stop 
 exec bash
