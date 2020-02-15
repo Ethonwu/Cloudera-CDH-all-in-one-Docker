@@ -23,29 +23,29 @@ template['products'] = products
 instantiator = {}
 
 instantiator['clusterName'] = template['displayName']
-hosts = []
+#hosts = []
 # Here need to group each node where have same role
 host_list = [
 { "hostName" : "ethon.cloudera.com", "hostTemplateRefName" : "HostTemplate-0-from-ethon.cloudera.com"},
 
         ]
 
-hosts.append(host_list)
+#hosts.append(host_list)
 
-instantiator['hosts'] = hosts
+instantiator['hosts'] = host_list
 
 variables = [
 
 { "name" : "hdfs-NAMENODE-BASE-dfs_name_dir_list", "value" : "/opt/dfs/nn" } , 
 { "name" : "hdfs-SECONDARYNAMENODE-BASE-fs_checkpoint_dir_list", "value" : "/opt/dfs/snn" }, 
 { "name" : "hive-hive_metastore_database_host", "value" : "ethon.cloudera.com" }, 
-{ "name" : "hive-hive_metastore_database_password", "value" : "<changeme>" }, 
+{ "name" : "hive-hive_metastore_database_password", "value" : "cloudera" }, 
 { "name" : "hue-database_host", "value" : "ethon.cloudera.com" }, 
-{ "name" : "hue-database_password", "value" : "<changeme>" }, 
+{ "name" : "hue-database_password", "value" : "cloudera" }, 
 { "name" : "hue-database_type", "value" : "mysql" }, 
 { "name" : "impala-IMPALAD-BASE-scratch_dirs", "value" : "/opt/impala/impalad" }, 
 { "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_host", "value" : "ethon.cloudera.com" }, 
-{ "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_password", "value" : "<changeme>" }, 
+{ "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_password", "value" : "cloudera" }, 
 { "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_type", "value" : "mysql" }, 
 { "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_user", "value" : "oozie" }, 
 { "name" : "yarn-NODEMANAGER-BASE-yarn_nodemanager_local_dirs", "value" : "/opt/yarn/nm" }
@@ -84,7 +84,7 @@ zookeeper_roleConfigGroups = [
    {
      "refName" : "zookeeper-SERVER-BASE",
      "roleType" : "SERVER",
-     "config" : zookeeper_server_config,
+     "configs" : zookeeper_server_config,
      "base": "true"
    }
 ]
@@ -119,7 +119,7 @@ hdfs_namenode_config = [
 namenode_roleConfigGroups = {
      "refName" :"hdfs-NAMENODE-BASE",
      "roleType" : "NAMENODE",
-     "config" : hdfs_namenode_config,
+     "configs" : hdfs_namenode_config,
      "base": "true"
    }
 
@@ -128,14 +128,14 @@ namenode_roleConfigGroups = {
 
 hdfs_secondarynamenode_config = [ 
 
-{ "name": "fs_checkpoint_dir_list" , "variable": "dfs-SECONDARYNAMENODE-BASE-fs_checkpoint_dir_list"  }
+{ "name": "fs_checkpoint_dir_list" , "variable": "hdfs-SECONDARYNAMENODE-BASE-fs_checkpoint_dir_list"  }
 
 ]
 
 secondarynamenode_roleConfigGroups = {
      "refName" :"hdfs-SECONDARYNAMENODE-BASE",
      "roleType" : "SECONDARYNAMENODE",
-     "config" : hdfs_secondarynamenode_config,
+     "configs" : hdfs_secondarynamenode_config,
      "base": "true"
    }
 
@@ -143,7 +143,7 @@ secondarynamenode_roleConfigGroups = {
 
 hdfs_datanode_config = [
 
-{"name":"dfs_data_dir_list", "value" : "opt/dfs/dn"},
+{"name":"dfs_data_dir_list", "value" : "/opt/dfs/dn"},
 {"name":"dfs_datanode_failed_volumes_tolerated" , "value":"0"}
 # if two path "value" : "/xxx/xxx/xxx , /xxx/xx/xxx"
 ]
@@ -151,7 +151,7 @@ hdfs_datanode_config = [
 datanode_roleConfigGroups = {
      "refName" :"hdfs-DATANODE-BASE",
      "roleType" : "DATANODE",
-     "config" : hdfs_datanode_config,
+     "configs" : hdfs_datanode_config,
      "base": "true"
    }
 
@@ -184,7 +184,7 @@ yarn_resourcemanager_config = [
 resourcemanager_roleConfigGroups = {
     "refName" : "yarn-RESOURCEMANAGER-BASE" ,
     "roleType" : "RESOURCEMANAGER",
-    "config" : yarn_resourcemanager_config ,
+    "configs" : yarn_resourcemanager_config ,
     "base" : "true"
 }
 
@@ -199,7 +199,7 @@ yarn_nodemanager_config = [
 nodemanager_roleConfigGroups = {
     "refName" : "yarn-NODEMANAGER-BASE" ,
     "roleType" : "NODEMANAGER" , 
-    "config" : yarn_nodemanager_config ,
+    "configs" : yarn_nodemanager_config ,
     "base" : "true"
 }
 
@@ -215,7 +215,7 @@ yarn_jobhis_config = [
 jobhis_roleConfigGroups = {
     "refName" : "yarn-JOBHISTORY-BASE" ,
     "roleType" : "JOBHISTORY" , 
-    "config" : yarn_jobhis_config ,
+    "configs" : yarn_jobhis_config ,
     "base" : "true"
 }
 
@@ -223,14 +223,15 @@ jobhis_roleConfigGroups = {
 
 yarn_gateway_config = [
 
-{ "name" : "mapreduce_reduce_memory_mb" , "value" : "3072" }
+{ "name" : "mapreduce_reduce_memory_mb" , "value" : "1024" },
+{ "name" : "mapreduce_map_memory_mb" , "value" : "1024" }
 
 ]
 
 yarngateway_roleConfigGroups = {
     "refName" : "yarn-GATEWAY-BASE" ,
     "roleType" : "GATEWAY" , 
-    "config" : yarn_gateway_config ,
+    "configs" : yarn_gateway_config ,
     "base" : "true"
 }
 
@@ -262,7 +263,7 @@ hive_hiveserver2_config = [
 hiveserver2_roleConfigGroups = {
     "refName" : "hive-HIVESERVER2-BASE" ,
     "roleType" : "HIVESERVER2" , 
-    "config" : hive_hiveserver2_config ,
+    "configs" : hive_hiveserver2_config ,
     "base" : "true"
 }
 
@@ -276,7 +277,7 @@ hive_metastore_config = [
 metastore_roleConfigGroups = {
     "refName" : "hive-HIVEMETASTORE-BASE" ,
     "roleType" : "HIVEMETASTORE" , 
-    "config" : hive_metastore_config ,
+    "configs" : hive_metastore_config ,
     "base" : "true"
 }
 
@@ -290,7 +291,7 @@ hive_gateway_config = [
 hivegatwway_roleConfigGroups = {
     "refName" : "hive-GATEWAY-BASE" ,
     "roleType" : "GATEWAY" , 
-    "config" : hive_gateway_config ,
+    "configs" : hive_gateway_config ,
     "base" : "true"
 }
 
@@ -304,8 +305,8 @@ hive_roleConfigGroups.append(hivegatwway_roleConfigGroups)
 
 
 hive_service_config = [
-{ "name" : "hive_metastore_database_password" , "variables" : "hive-hive_metastore_database_password" },
-{ "name" : "hive_metastore_database_host" , "variables" : "hive-hive_metastore_database_host" }
+{ "name" : "hive_metastore_database_password" , "variable" : "hive-hive_metastore_database_password" },
+{ "name" : "hive_metastore_database_host" , "variable" : "hive-hive_metastore_database_host" }
 ]
 
 
@@ -325,13 +326,13 @@ hive = {
 
 
 impald_config = [
-  {"name":"scratch_dirs", "variables":"impala-IMPALAD-BASE-scratch_dirs"}  
+  {"name":"scratch_dirs", "variable":"impala-IMPALAD-BASE-scratch_dirs"}  
 ]
 
 impalad_roleConfigGroups = {
     "refName" : "impala-IMPALAD-BASE" ,
-    "roleType" : "IMPAPAD" , 
-    "config" : impald_config ,
+    "roleType" : "IMPALAD" , 
+    "configs" : impald_config ,
     "base" : "true"
 }
 
@@ -344,7 +345,7 @@ statestore_config = [
 statestore_roleConfigGroups= {
     "refName" : "impala-STATESTORE-BASE" ,
     "roleType" : "STATESTORE" , 
-    "config" : statestore_config ,
+    "configs" : statestore_config ,
     "base" : "true"
 }
 
@@ -357,7 +358,7 @@ catalogserver_config = [
 catalogserver_roleConfigGroups = {
     "refName" : "impala-CATALOGSERVER-BASE" ,
     "roleType" : "CATALOGSERVER" , 
-    "config" : catalogserver_config ,
+    "configs" : catalogserver_config ,
     "base" : "true"
 }
 
@@ -386,16 +387,16 @@ impala = {
 #### oozie server ####
 
 oozie_server_config = [
- {"name":"oozie_database_user", "variables":"oozie-OOZIE_SERVER-BASE-oozie_database_user"},
- {"name":"oozie_database_host", "variables":"oozie-OOZIE_SERVER-BASE-oozie_database_host"},
- {"name":"oozie_database_type", "variables":"oozie-OOZIE_SERVER-BASE-oozie_database_type"},
- {"name":"oozie_database_password", "variables":"oozie-OOZIE_SERVER-BASE-oozie_database_password"}
+ {"name":"oozie_database_user", "variable":"oozie-OOZIE_SERVER-BASE-oozie_database_user"},
+ {"name":"oozie_database_host", "variable":"oozie-OOZIE_SERVER-BASE-oozie_database_host"},
+ {"name":"oozie_database_type", "variable":"oozie-OOZIE_SERVER-BASE-oozie_database_type"},
+ {"name":"oozie_database_password", "variable":"oozie-OOZIE_SERVER-BASE-oozie_database_password"}
 ]
 
 oozie_server_roleConfigGroups = {
     "refName" : "oozie-OOZIE_SERVER-BASE" ,
     "roleType" : "OOZIE_SERVER" , 
-    "config" : oozie_server_config ,
+    "configs" : oozie_server_config ,
     "base" : "true"
 }
 
@@ -427,7 +428,7 @@ regionserver_config = [
 regionserver_roleConfigGroups = {
     "refName" : "hbase-REGIONSERVER-BASE" ,
     "roleType" : "REGIONSERVER" , 
-    "config" : regionserver_config ,
+    "configs" : regionserver_config ,
     "base" : "true"
 }
 
@@ -440,7 +441,7 @@ hbase_master_config = [
 hbase_master_roleConfigGroups = {
     "refName" : "hbase-MASTER-BASE" ,
     "roleType" : "MASTER" , 
-    "config" : hbase_master_config,
+    "configs" : hbase_master_config,
     "base" : "true"
 }
 
@@ -470,7 +471,7 @@ hue_server_config = [
 hue_server_roleConfigGroups = {
     "refName" : "hue-HUE_SERVER-BASE" ,
     "roleType" : "HUE_SERVER" , 
-    "config" : hue_server_config ,
+    "configs" : hue_server_config ,
     "base" : "true"
 }
 
@@ -482,7 +483,7 @@ hue_loadbalancer_config = []
 loadblancer_roleConfigGroups = {
     "refName" : "hue-HUE_LOAD_BALANCER-BASE" ,
     "roleType" : "HUE_LOAD_BALANCER" , 
-    "config" : hue_loadbalancer_config ,
+    "configs" : hue_loadbalancer_config ,
     "base" : "true"
 }
 
@@ -493,9 +494,9 @@ hue_roleConfigGroups.append(hue_server_roleConfigGroups)
 hue_roleConfigGroups.append(loadblancer_roleConfigGroups)
 
 hue_service_config = [
-        { "name":"database_password", "variables": "hue-database_passwor"},
-        { "name":"database_type", "variables":"hue-database_type"},
-        { "name":"database_host", "variables":"hue-database_host" }
+        { "name":"database_password", "variable": "hue-database_password"},
+        { "name":"database_type", "variable":"hue-database_type"},
+        { "name":"database_host", "variable":"hue-database_host" }
 ]
 
 hue = {
@@ -515,7 +516,7 @@ spark2_hissrv_config = []
 spark2_hissrv_roleConfigGroups = {
     "refName" : "spark2_on_yarn-SPARK2_YARN_HISTORY_SERVER-BASE" ,
     "roleType" : "SPARK2_YARN_HISTORY_SERVER" , 
-    "config" : spark2_hissrv_config ,
+    "configs" : spark2_hissrv_config ,
     "base" : "true"
 }
 
@@ -555,7 +556,7 @@ flume_agent_config = []
 flume_agent_roleConfigGroups = {
     "refName" : "flume-AGENT-BASE" ,
     "roleType" : "AGENT" , 
-    "config" : flume_agent_config ,
+    "configs" : flume_agent_config ,
     "base" : "true"
 
 }
@@ -569,15 +570,15 @@ flume_service_roleConfigGroups.append(flume_agent_roleConfigGroups)
 
 
 flume_config = [
-        {"name": "hdfs_service","value"}
+        {"name": "hdfs_service","value" :"hdfs"}
         ]
 
 
 flume = {
 "refName" : "flume",
 "serviceType" : "FLUME",
-"serviceConfigs" : spark2_service_config,
-"roleConfigGroups" : spark2_roleConfigGroups
+"serviceConfigs" : flume_config,
+"roleConfigGroups" : flume_service_roleConfigGroups
 }
 
 
@@ -601,8 +602,9 @@ service.append(oozie)
 service.append(hbase)
 service.append(hue)
 service.append(spark2)
+service.append(flume)
 
-template['service'] = service
+template['services'] = service
 
 output = json.dumps(template, ensure_ascii=False)
 print output

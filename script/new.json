@@ -56,310 +56,13 @@
       }
     ],
     "hosts": [
-      [
-        {
-          "hostName": "ethon.cloudera.com",
-          "hostTemplateRefName": "HostTemplate-0-from-ethon.cloudera.com"
-        }
-      ]
+      {
+        "hostName": "ethon.cloudera.com",
+        "hostTemplateRefName": "HostTemplate-0-from-ethon.cloudera.com"
+      }
     ]
   },
   "displayName": "Cluster 1",
-  "service": [
-    {
-      "serviceType": "ZOOKEEPER",
-      "roleConfigGroups": [
-        {
-          "roleType": "SERVER",
-          "base": "true",
-          "config": [
-            {
-              "name": "max_log_size",
-              "value": "1"
-            }
-          ],
-          "refName": "zookeeper-SERVER-BASE"
-        }
-      ],
-      "serviceConfigs": [],
-      "refName": "zookeeper"
-    },
-    {
-      "serviceType": "HDFS",
-      "roleConfigGroups": [
-        {
-          "roleType": "NAMENODE",
-          "base": "true",
-          "config": [
-            {
-              "variable": "hdfs-NAMENODE-BASE-dfs_name_dir_list",
-              "name": "dfs_name_dir_list"
-            }
-          ],
-          "refName": "hdfs-NAMENODE-BASE"
-        },
-        {
-          "roleType": "SECONDARYNAMENODE",
-          "base": "true",
-          "config": [
-            {
-              "variable": "dfs-SECONDARYNAMENODE-BASE-fs_checkpoint_dir_list",
-              "name": "fs_checkpoint_dir_list"
-            }
-          ],
-          "refName": "hdfs-SECONDARYNAMENODE-BASE"
-        },
-        {
-          "roleType": "DATANODE",
-          "base": "true",
-          "config": [
-            {
-              "name": "dfs_data_dir_list",
-              "value": "opt/dfs/dn"
-            },
-            {
-              "name": "dfs_datanode_failed_volumes_tolerated",
-              "value": "0"
-            }
-          ],
-          "refName": "hdfs-DATANODE-BASE"
-        }
-      ],
-      "serviceConfigs": [],
-      "refName": "hdfs"
-    },
-    {
-      "serviceType": "YARN",
-      "roleConfigGroups": [
-        {
-          "roleType": "RESOURCEMANAGER",
-          "base": "true",
-          "config": [
-            {
-              "name": "yarn_scheduler_increment_allocation_mb",
-              "value": "1024"
-            }
-          ],
-          "refName": "yarn-RESOURCEMANAGER-BASE"
-        },
-        {
-          "roleType": "NODEMANAGER",
-          "base": "true",
-          "config": [
-            {
-              "variable": "yarn-NODEMANAGER-BASE-yarn_nodemanager_local_dirs",
-              "name": "yarn_nodemanager_local_dirs"
-            }
-          ],
-          "refName": "yarn-NODEMANAGER-BASE"
-        },
-        {
-          "roleType": "JOBHISTORY",
-          "base": "true",
-          "config": [],
-          "refName": "yarn-JOBHISTORY-BASE"
-        },
-        {
-          "roleType": "GATEWAY",
-          "base": "true",
-          "config": [
-            {
-              "name": "mapreduce_reduce_memory_mb",
-              "value": "3072"
-            }
-          ],
-          "refName": "yarn-GATEWAY-BASE"
-        }
-      ],
-      "serviceConfigs": [],
-      "refName": "yarn"
-    },
-    {
-      "serviceType": "HIVE",
-      "roleConfigGroups": [
-        {
-          "roleType": "HIVEMETASTORE",
-          "base": "true",
-          "config": [],
-          "refName": "hive-HIVEMETASTORE-BASE"
-        },
-        {
-          "roleType": "HIVESERVER2",
-          "base": "true",
-          "config": [],
-          "refName": "hive-HIVESERVER2-BASE"
-        },
-        {
-          "roleType": "GATEWAY",
-          "base": "true",
-          "config": [],
-          "refName": "hive-GATEWAY-BASE"
-        }
-      ],
-      "serviceConfigs": [
-        {
-          "variables": "hive-hive_metastore_database_password",
-          "name": "hive_metastore_database_password"
-        },
-        {
-          "variables": "hive-hive_metastore_database_host",
-          "name": "hive_metastore_database_host"
-        }
-      ],
-      "refName": "hive"
-    },
-    {
-      "serviceType": "IMPALA",
-      "roleConfigGroups": [
-        {
-          "roleType": "IMPAPAD",
-          "base": "true",
-          "config": [
-            {
-              "variables": "impala-IMPALAD-BASE-scratch_dirs",
-              "name": "scratch_dirs"
-            }
-          ],
-          "refName": "impala-IMPALAD-BASE"
-        },
-        {
-          "roleType": "CATALOGSERVER",
-          "base": "true",
-          "config": [],
-          "refName": "impala-CATALOGSERVER-BASE"
-        },
-        {
-          "roleType": "STATESTORE",
-          "base": "true",
-          "config": [],
-          "refName": "impala-STATESTORE-BASE"
-        }
-      ],
-      "serviceConfigs": [],
-      "refName": "impale"
-    },
-    {
-      "serviceType": "OOZIE",
-      "roleConfigGroups": [
-        {
-          "roleType": "OOZIE_SERVER",
-          "base": "true",
-          "config": [
-            {
-              "variables": "oozie-OOZIE_SERVER-BASE-oozie_database_user",
-              "name": "oozie_database_user"
-            },
-            {
-              "variables": "oozie-OOZIE_SERVER-BASE-oozie_database_host",
-              "name": "oozie_database_host"
-            },
-            {
-              "variables": "oozie-OOZIE_SERVER-BASE-oozie_database_type",
-              "name": "oozie_database_type"
-            },
-            {
-              "variables": "oozie-OOZIE_SERVER-BASE-oozie_database_password",
-              "name": "oozie_database_password"
-            }
-          ],
-          "refName": "oozie-OOZIE_SERVER-BASE"
-        }
-      ],
-      "serviceConfigs": [],
-      "refName": "oozie"
-    },
-    {
-      "serviceType": "HBASE",
-      "roleConfigGroups": [
-        {
-          "roleType": "REGIONSERVER",
-          "base": "true",
-          "config": [],
-          "refName": "hbase-REGIONSERVER-BASE"
-        },
-        {
-          "roleType": "MASTER",
-          "base": "true",
-          "config": [],
-          "refName": "hbase-MASTER-BASE"
-        }
-      ],
-      "serviceConfigs": [],
-      "refName": "hbase"
-    },
-    {
-      "serviceType": "HUE",
-      "roleConfigGroups": [
-        {
-          "roleType": "HUE_SERVER",
-          "base": "true",
-          "config": [],
-          "refName": "hue-HUE_SERVER-BASE"
-        },
-        {
-          "roleType": "HUE_LOAD_BALANCER",
-          "base": "true",
-          "config": [],
-          "refName": "hue-HUE_LOAD_BALANCER-BASE"
-        }
-      ],
-      "serviceConfigs": [
-        {
-          "variables": "hue-database_passwor",
-          "name": "database_password"
-        },
-        {
-          "variables": "hue-database_type",
-          "name": "database_type"
-        },
-        {
-          "variables": "hue-database_host",
-          "name": "database_host"
-        }
-      ],
-      "refName": "hue"
-    },
-    {
-      "serviceType": "SPARK2_ON_YARN",
-      "roleConfigGroups": [
-        {
-          "roleType": "SPARK2_YARN_HISTORY_SERVER",
-          "base": "true",
-          "config": [],
-          "refName": "spark2_on_yarn-SPARK2_YARN_HISTORY_SERVER-BASE"
-        }
-      ],
-      "serviceConfigs": [
-        {
-          "name": "yarn_service",
-          "value": "yarn"
-        },
-        {
-          "name": "hive_service",
-          "value": "Hive"
-        }
-      ],
-      "refName": "spark2_on_yarn"
-    },
-    {
-      "serviceType": "FLUME",
-      "roleConfigGroups": [
-        {
-          "roleType": "AGENT",
-          "base": "true",
-          "config": [],
-          "refName": "flume-AGENT-BASE"
-        }
-      ],
-      "serviceConfigs": [
-        {
-          "name": "hdfs_service",
-          "value": "hdfs"
-        }
-      ],
-      "refName": "flume"
-    }
-  ],
   "hostTemplates": [
     {
       "cardinality": 1,
@@ -400,6 +103,305 @@
     {
       "product": "SPARK2",
       "version": "2.4.0.cloudera1-1.cdh5.13.3.p0.1007356"
+    }
+  ],
+  "services": [
+    {
+      "serviceType": "ZOOKEEPER",
+      "roleConfigGroups": [
+        {
+          "roleType": "SERVER",
+          "configs": [
+            {
+              "name": "max_log_size",
+              "value": "1"
+            }
+          ],
+          "base": "true",
+          "refName": "zookeeper-SERVER-BASE"
+        }
+      ],
+      "serviceConfigs": [],
+      "refName": "zookeeper"
+    },
+    {
+      "serviceType": "HDFS",
+      "roleConfigGroups": [
+        {
+          "roleType": "NAMENODE",
+          "configs": [
+            {
+              "variable": "hdfs-NAMENODE-BASE-dfs_name_dir_list",
+              "name": "dfs_name_dir_list"
+            }
+          ],
+          "base": "true",
+          "refName": "hdfs-NAMENODE-BASE"
+        },
+        {
+          "roleType": "SECONDARYNAMENODE",
+          "configs": [
+            {
+              "variable": "hdfs-SECONDARYNAMENODE-BASE-fs_checkpoint_dir_list",
+              "name": "fs_checkpoint_dir_list"
+            }
+          ],
+          "base": "true",
+          "refName": "hdfs-SECONDARYNAMENODE-BASE"
+        },
+        {
+          "roleType": "DATANODE",
+          "configs": [
+            {
+              "name": "dfs_data_dir_list",
+              "value": "/opt/dfs/dn"
+            },
+            {
+              "name": "dfs_datanode_failed_volumes_tolerated",
+              "value": "0"
+            }
+          ],
+          "base": "true",
+          "refName": "hdfs-DATANODE-BASE"
+        }
+      ],
+      "serviceConfigs": [],
+      "refName": "hdfs"
+    },
+    {
+      "serviceType": "YARN",
+      "roleConfigGroups": [
+        {
+          "roleType": "RESOURCEMANAGER",
+          "configs": [
+            {
+              "name": "yarn_scheduler_increment_allocation_mb",
+              "value": "1024"
+            }
+          ],
+          "base": "true",
+          "refName": "yarn-RESOURCEMANAGER-BASE"
+        },
+        {
+          "roleType": "NODEMANAGER",
+          "configs": [
+            {
+              "variable": "yarn-NODEMANAGER-BASE-yarn_nodemanager_local_dirs",
+              "name": "yarn_nodemanager_local_dirs"
+            }
+          ],
+          "base": "true",
+          "refName": "yarn-NODEMANAGER-BASE"
+        },
+        {
+          "roleType": "JOBHISTORY",
+          "configs": [],
+          "base": "true",
+          "refName": "yarn-JOBHISTORY-BASE"
+        },
+        {
+          "roleType": "GATEWAY",
+          "configs": [
+            {
+              "name": "mapreduce_reduce_memory_mb",
+              "value": "1024"
+            },
+            {
+              "name": "mapreduce_map_memory_mb",
+              "value": "1024"
+            }
+          ],
+          "base": "true",
+          "refName": "yarn-GATEWAY-BASE"
+        }
+      ],
+      "serviceConfigs": [],
+      "refName": "yarn"
+    },
+    {
+      "serviceType": "HIVE",
+      "roleConfigGroups": [
+        {
+          "roleType": "HIVEMETASTORE",
+          "configs": [],
+          "base": "true",
+          "refName": "hive-HIVEMETASTORE-BASE"
+        },
+        {
+          "roleType": "HIVESERVER2",
+          "configs": [],
+          "base": "true",
+          "refName": "hive-HIVESERVER2-BASE"
+        },
+        {
+          "roleType": "GATEWAY",
+          "configs": [],
+          "base": "true",
+          "refName": "hive-GATEWAY-BASE"
+        }
+      ],
+      "serviceConfigs": [
+        {
+          "variable": "hive-hive_metastore_database_password",
+          "name": "hive_metastore_database_password"
+        },
+        {
+          "variable": "hive-hive_metastore_database_host",
+          "name": "hive_metastore_database_host"
+        }
+      ],
+      "refName": "hive"
+    },
+    {
+      "serviceType": "IMPALA",
+      "roleConfigGroups": [
+        {
+          "roleType": "IMPALAD",
+          "configs": [
+            {
+              "variable": "impala-IMPALAD-BASE-scratch_dirs",
+              "name": "scratch_dirs"
+            }
+          ],
+          "base": "true",
+          "refName": "impala-IMPALAD-BASE"
+        },
+        {
+          "roleType": "CATALOGSERVER",
+          "configs": [],
+          "base": "true",
+          "refName": "impala-CATALOGSERVER-BASE"
+        },
+        {
+          "roleType": "STATESTORE",
+          "configs": [],
+          "base": "true",
+          "refName": "impala-STATESTORE-BASE"
+        }
+      ],
+      "serviceConfigs": [],
+      "refName": "impale"
+    },
+    {
+      "serviceType": "OOZIE",
+      "roleConfigGroups": [
+        {
+          "roleType": "OOZIE_SERVER",
+          "configs": [
+            {
+              "variable": "oozie-OOZIE_SERVER-BASE-oozie_database_user",
+              "name": "oozie_database_user"
+            },
+            {
+              "variable": "oozie-OOZIE_SERVER-BASE-oozie_database_host",
+              "name": "oozie_database_host"
+            },
+            {
+              "variable": "oozie-OOZIE_SERVER-BASE-oozie_database_type",
+              "name": "oozie_database_type"
+            },
+            {
+              "variable": "oozie-OOZIE_SERVER-BASE-oozie_database_password",
+              "name": "oozie_database_password"
+            }
+          ],
+          "base": "true",
+          "refName": "oozie-OOZIE_SERVER-BASE"
+        }
+      ],
+      "serviceConfigs": [],
+      "refName": "oozie"
+    },
+    {
+      "serviceType": "HBASE",
+      "roleConfigGroups": [
+        {
+          "roleType": "REGIONSERVER",
+          "configs": [],
+          "base": "true",
+          "refName": "hbase-REGIONSERVER-BASE"
+        },
+        {
+          "roleType": "MASTER",
+          "configs": [],
+          "base": "true",
+          "refName": "hbase-MASTER-BASE"
+        }
+      ],
+      "serviceConfigs": [],
+      "refName": "hbase"
+    },
+    {
+      "serviceType": "HUE",
+      "roleConfigGroups": [
+        {
+          "roleType": "HUE_SERVER",
+          "configs": [],
+          "base": "true",
+          "refName": "hue-HUE_SERVER-BASE"
+        },
+        {
+          "roleType": "HUE_LOAD_BALANCER",
+          "configs": [],
+          "base": "true",
+          "refName": "hue-HUE_LOAD_BALANCER-BASE"
+        }
+      ],
+      "serviceConfigs": [
+        {
+          "variable": "hue-database_password",
+          "name": "database_password"
+        },
+        {
+          "variable": "hue-database_type",
+          "name": "database_type"
+        },
+        {
+          "variable": "hue-database_host",
+          "name": "database_host"
+        }
+      ],
+      "refName": "hue"
+    },
+    {
+      "serviceType": "SPARK2_ON_YARN",
+      "roleConfigGroups": [
+        {
+          "roleType": "SPARK2_YARN_HISTORY_SERVER",
+          "configs": [],
+          "base": "true",
+          "refName": "spark2_on_yarn-SPARK2_YARN_HISTORY_SERVER-BASE"
+        }
+      ],
+      "serviceConfigs": [
+        {
+          "name": "yarn_service",
+          "value": "yarn"
+        },
+        {
+          "name": "hive_service",
+          "value": "Hive"
+        }
+      ],
+      "refName": "spark2_on_yarn"
+    },
+    {
+      "serviceType": "FLUME",
+      "roleConfigGroups": [
+        {
+          "roleType": "AGENT",
+          "configs": [],
+          "base": "true",
+          "refName": "flume-AGENT-BASE"
+        }
+      ],
+      "serviceConfigs": [
+        {
+          "name": "hdfs_service",
+          "value": "hdfs"
+        }
+      ],
+      "refName": "flume"
     }
   ],
   "cmVersion": "5.16.2",
