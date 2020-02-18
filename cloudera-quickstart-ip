@@ -34,13 +34,13 @@ fi
 
 if [ "${IP}" == '127.0.0.1' ]; then
     cat >> /etc/hosts <<EOF
-127.0.0.1	ethon.cloudera.com	ethon	localhost	localhost.domain
+127.0.0.1	athemaster.training.com	athemaster	localhost	localhost.domain
 
 EOF
 else
     cat >> /etc/hosts <<EOF
 127.0.0.1	localhost	localhost.domain
-${IP}	ethon.cloudera.com	ethon
+${IP}	athemaster.training.com	athemaster
 
 EOF
 fi
