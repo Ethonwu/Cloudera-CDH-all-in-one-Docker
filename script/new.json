@@ -165,7 +165,12 @@
           "refName": "hdfs-DATANODE-BASE"
         }
       ],
-      "serviceConfigs": [],
+      "serviceConfigs": [
+        {
+          "name": "dfs_replication",
+          "value": "1"
+        }
+      ],
       "refName": "hdfs"
     },
     {
