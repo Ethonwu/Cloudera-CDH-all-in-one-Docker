@@ -1,0 +1,6 @@
+.*
+!.env
+README.md
+Dockerfile
+quick_start_script
+finish_container_buider
