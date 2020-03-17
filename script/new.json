@@ -12,7 +12,7 @@
       },
       {
         "name": "hive-hive_metastore_database_host",
-        "value": "ethon.cloudera.com"
+        "value": "athemaster.training.com"
       },
       {
         "name": "hive-hive_metastore_database_password",
@@ -20,7 +20,7 @@
       },
       {
         "name": "hue-database_host",
-        "value": "ethon.cloudera.com"
+        "value": "athemaster.training.com"
       },
       {
         "name": "hue-database_password",
@@ -36,7 +36,7 @@
       },
       {
         "name": "oozie-OOZIE_SERVER-BASE-oozie_database_host",
-        "value": "ethon.cloudera.com"
+        "value": "athemaster.training.com"
       },
       {
         "name": "oozie-OOZIE_SERVER-BASE-oozie_database_password",
@@ -57,8 +57,8 @@
     ],
     "hosts": [
       {
-        "hostName": "ethon.cloudera.com",
-        "hostTemplateRefName": "HostTemplate-0-from-ethon.cloudera.com"
+        "hostName": "athemaster.training.com",
+        "hostTemplateRefName": "HostTemplate-0-from-athemaster.training.com"
       }
     ]
   },
@@ -66,7 +66,7 @@
   "hostTemplates": [
     {
       "cardinality": 1,
-      "refName": "HostTemplate-0-from-ethon.cloudera.com",
+      "refName": "HostTemplate-0-from-athemaster.training.com",
       "roleConfigGroupsRefNames": [
         "hbase-MASTER-BASE",
         "hbase-REGIONSERVER-BASE",
@@ -169,10 +169,6 @@
         {
           "name": "dfs_replication",
           "value": "1"
-        },
-        {
-          "name": "hdfs_verify_ec_with_topology_enabled",
-          "value": "false"
         },
         {
           "name": "hdfs_under_replicated_blocks_thresholds",
