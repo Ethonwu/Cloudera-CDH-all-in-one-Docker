@@ -1,13 +1,16 @@
 import json
 
 
+
 template = {}
 
 
 ## products repositories    ##
 products = [ 
  {"version" : "5.16.2-1.cdh5.16.2.p0.8","product" : "CDH"},
- {"version" : "2.4.0.cloudera1-1.cdh5.13.3.p0.1007356","product" : "SPARK2"}   ]
+ {"version" : "2.4.0.cloudera1-1.cdh5.13.3.p0.1007356","product" : "SPARK2"},
+ {"version" : "1.6.1.p1.1504243","product":"CDSW"} ] 
+# CDSW 
 
 #print type(products[0])
 #print products[0]
@@ -15,7 +18,7 @@ products = [
 template['cdhVersion'] = "5.16.2"
 template['displayName'] = "Cluster 1"
 template['cmVersion'] = "5.16.2"
-template['repositories'] = ["http://archive.cloudera.com/spark2/parcels/2.4.0.cloudera1/", "https://archive.cloudera.com/cdh5/parcels/5.16.2/"]
+template['repositories'] = ["http://archive.cloudera.com/spark2/parcels/2.4.0.cloudera1/", "https://archive.cloudera.com/cdh5/parcels/5.16.2/","https://archive.cloudera.com/cdsw1/1.6.1/parcels/"]
 template['products'] = products
 
 
@@ -40,26 +43,32 @@ variables = [
 { "name" : "hdfs-SECONDARYNAMENODE-BASE-fs_checkpoint_dir_list", "value" : "/opt/dfs/snn" }, 
 { "name" : "hive-hive_metastore_database_host", "value" : "ethon.cloudera.com" }, 
 { "name" : "hive-hive_metastore_database_password", "value" : "cloudera" }, 
-{ "name" : "hue-database_host", "value" : "ethon.cloudera.com" }, 
-{ "name" : "hue-database_password", "value" : "cloudera" }, 
-{ "name" : "hue-database_type", "value" : "mysql" }, 
-{ "name" : "impala-IMPALAD-BASE-scratch_dirs", "value" : "/opt/impala/impalad" }, 
-{ "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_host", "value" : "ethon.cloudera.com" }, 
-{ "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_password", "value" : "cloudera" }, 
-{ "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_type", "value" : "mysql" }, 
-{ "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_user", "value" : "oozie" }, 
+#{ "name" : "hue-database_host", "value" : "ethon.cloudera.com" }, 
+#{ "name" : "hue-database_password", "value" : "cloudera" }, 
+#{ "name" : "hue-database_type", "value" : "mysql" }, 
+#{ "name" : "impala-IMPALAD-BASE-scratch_dirs", "value" : "/opt/impala/impalad" }, 
+#{ "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_host", "value" : "ethon.cloudera.com" }, 
+#{ "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_password", "value" : "cloudera" }, 
+#{ "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_type", "value" : "mysql" }, 
+#{ "name" : "oozie-OOZIE_SERVER-BASE-oozie_database_user", "value" : "oozie" }, 
 { "name" : "yarn-NODEMANAGER-BASE-yarn_nodemanager_local_dirs", "value" : "/opt/yarn/nm" }
 
 ]
 
 ##  hostTemplates  ##
 
+#hostTemplates = [
+# { "refName" : "HostTemplate-0-from-ethon.cloudera.com",
+#   "cardinality" : 1,
+#   "roleConfigGroupsRefNames" : [ "hbase-MASTER-BASE", "hbase-REGIONSERVER-BASE", "hdfs-DATANODE-BASE", "hdfs-NAMENODE-BASE", "hdfs-SECONDARYNAMENODE-BASE", "hive-GATEWAY-BASE", "hive-HIVEMETASTORE-BASE", "hive-HIVESERVER2-BASE", "hue-HUE_LOAD_BALANCER-BASE", "hue-HUE_SERVER-BASE", "impala-CATALOGSERVER-BASE", "impala-IMPALAD-BASE", "impala-STATESTORE-BASE", "oozie-OOZIE_SERVER-BASE", "spark2_on_yarn-SPARK2_YARN_HISTORY_SERVER-BASE", "yarn-JOBHISTORY-BASE", "yarn-NODEMANAGER-BASE", "yarn-RESOURCEMANAGER-BASE", "zookeeper-SERVER-BASE","flume-AGENT-BASE" ]
+#  }
+#]
+
 hostTemplates = [
  { "refName" : "HostTemplate-0-from-ethon.cloudera.com",
    "cardinality" : 1,
-   "roleConfigGroupsRefNames" : [ "hbase-MASTER-BASE", "hbase-REGIONSERVER-BASE", "hdfs-DATANODE-BASE", "hdfs-NAMENODE-BASE", "hdfs-SECONDARYNAMENODE-BASE", "hive-GATEWAY-BASE", "hive-HIVEMETASTORE-BASE", "hive-HIVESERVER2-BASE", "hue-HUE_LOAD_BALANCER-BASE", "hue-HUE_SERVER-BASE", "impala-CATALOGSERVER-BASE", "impala-IMPALAD-BASE", "impala-STATESTORE-BASE", "oozie-OOZIE_SERVER-BASE", "spark2_on_yarn-SPARK2_YARN_HISTORY_SERVER-BASE", "yarn-JOBHISTORY-BASE", "yarn-NODEMANAGER-BASE", "yarn-RESOURCEMANAGER-BASE", "zookeeper-SERVER-BASE","flume-AGENT-BASE" ]
-  }
-]
+   "roleConfigGroupsRefNames" : [ "hdfs-DATANODE-BASE", "hdfs-NAMENODE-BASE", "hdfs-SECONDARYNAMENODE-BASE", "hive-GATEWAY-BASE", "hive-HIVEMETASTORE-BASE", "hive-HIVESERVER2-BASE", "spark2_on_yarn-SPARK2_YARN_HISTORY_SERVER-BASE", "yarn-JOBHISTORY-BASE", "yarn-NODEMANAGER-BASE", "yarn-RESOURCEMANAGER-BASE", "zookeeper-SERVER-BASE" ]
+  }]
 
 
 instantiator['variables'] = variables
@@ -105,7 +114,10 @@ zookeeper = {
 
 hdfs_server_config = [
 
-{ "name" : "dfs_replication" , "value" : "3"}
+{ "name" : "dfs_replication" , "value" : "1" },
+{ "name": "hdfs_verify_ec_with_topology_enabled", "value": "false" },
+{ "name": "hdfs_under_replicated_blocks_thresholds","value": "{\"warning\":\"never\",\"critical\":\"never\"}" }
+
  
 ]
 
@@ -166,7 +178,7 @@ hdfs = {
 
 "refName" : "hdfs",
 "serviceType" : "HDFS",
-"serviceConfigs" : [],
+"serviceConfigs" : hdfs_server_config,
 "roleConfigGroups" : hdfs_roleConfigGroups
 
 }
@@ -534,8 +546,8 @@ spark2_roleConfigGroups.append(spark2_hissrv_roleConfigGroups)
 
 
 spark2_service_config = [
-        {"name":"yarn_service" ,"value": "yarn"},
-        {"name":"hive_service", "value": "Hive"}
+        {"name":"yarn_service" ,"ref": "yarn"},
+        {"name":"hive_service", "ref": "hive"}
 ]
 
 spark2 = {
@@ -582,13 +594,70 @@ flume = {
 }
 
 
+### CDSW Service ###
+
+#### CDSW MASTER BASE Config
+
+cdsw_master_config = [] 
+
+cdsw_master_roleConfigGroups = {
+    "refName" : "cdsw-CDSW_MASTER-BASE",
+    "roleType" : "CDSW_MASTER" , 
+    "configs" : cdsw_master_config ,
+    "base" : "true"
+
+}
+
+#### CDSW Docker Config  ####
+
+cdsw_docker_config = [
+{"name": "cdsw.docker.devices.config","value" : "YourDockerDevice"}
+]
+
+cdsw_docker_roleConfigGroups = {
+    "refName" : "cdsw-CDSW_DOCKER-BASE",
+    "roleType" : "CDSW_DOCKER" , 
+    "configs" : cdsw_docker_config ,
+    "base" : "true"
+}
+
+#### CDSW Application #### 
+
+cdsw_application_config = [
+]
+
+cdsw_application_roleConfigGroups = {
+    "refName" : "cdsw-CDSW_APPLICATION-BASE",
+    "roleType" : "CDSW_APPLICATION" , 
+    "configs" : cdsw_application_config ,
+    "base" : "true"
+}
+
+#### CDSW Main Service 
 
 
+cdsw_service_roleConfigGroups = []
+cdsw_service_roleConfigGroups.append(cdsw_docker_roleConfigGroups)
+cdsw_service_roleConfigGroups.append(cdsw_application_roleConfigGroups)
+cdsw_service_roleConfigGroups.append(cdsw_master_roleConfigGroups)
 
 
+cdsw_config = [
+        {"name": "yarn_service","ref" :"yarn"},
+        {"name":"hdfs_service","ref":"hdfs"},
+        {"name":"hive_service","ref":"hive"},
+        {"name":"spark_on_yarn_service","ref":"spark_on_yarn"},
+        {"name":"cdsw.domain.config","value":"ethon.cloudera.com"},
+        {"name":"cdsw.master.ip.config","value":"YourPrivateIP"}
+        ]
 
 
-
+cdsw = {
+"refName" : "cdsw",
+"serviceType" : "CDSW",
+"serviceConfigs" : cdsw_config,
+"roleConfigGroups" : cdsw_service_roleConfigGroups
+}
 
 
 
@@ -597,12 +666,13 @@ service.append(zookeeper)
 service.append(hdfs)
 service.append(yarn)
 service.append(hive)
-service.append(impala)
-service.append(oozie)
-service.append(hbase)
-service.append(hue)
+#service.append(impala)
+#service.append(oozie)
+#service.append(hbase)
+#service.append(hue)
 service.append(spark2)
-service.append(flume)
+#service.append(flume)
+service.append(cdsw)
 
 template['services'] = service
 
