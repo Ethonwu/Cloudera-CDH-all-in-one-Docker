@@ -57,7 +57,8 @@ MGMT_ROLE_CONFIG = {
 }
 AMON_ROLENAME = "ACTIVITYMONITOR"
 AMON_ROLE_CONFIG = {
-    'firehose_database_host': cm_host + ":7432",
+    #'firehose_database_host': cm_host + ":7432",
+    'firehose_database_host': host_list[0] ,
     'firehose_database_user': 'amon',
     'firehose_database_password': FIREHOSE_DATABASE_PASSWORD,
     'firehose_database_type': 'mysql',
@@ -90,7 +91,8 @@ SMON_ROLE_CONFIG = {
           }
 NAV_ROLENAME = "NAVIGATOR"
 NAV_ROLE_CONFIG = {
-    'navigator_database_host': cm_host + ":7432",
+    #'navigator_database_host': cm_host + ":7432",
+    'navigator_database_host': host_list[0],
     'navigator_database_user': 'nav',
     'navigator_database_password': NAVIGATOR_DATABASE_PASSWORD,
     'navigator_database_type': 'mysql',
@@ -102,7 +104,7 @@ NAVMS_ROLE_CONFIG = {
 }
 RMAN_ROLENAME = "REPORTMANAGER"
 RMAN_ROLE_CONFIG = {
-    'headlamp_database_host': cm_host + ":7432",
+    'headlamp_database_host': host_list[0],
     'headlamp_database_user': 'rman',
     'headlamp_database_password': HEADLAMP_DATABASE_PASSWORD,
     'headlamp_database_type': 'mysql',
