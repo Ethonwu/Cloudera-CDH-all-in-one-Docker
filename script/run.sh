@@ -16,7 +16,36 @@ chmod 644 /opt/cloudera/csd/*
 while [ `curl -s -X GET -u "admin:admin"  http://localhost:7180/api/version` -z ] ;
     do
     echo "waiting 10s for CM to come up..";
-    sleep 10;
+    echo -ne '[ᗧ·····························]\r'
+    sleep 1
+    echo -ne '[    ᗧ·························]\r'
+    sleep 1
+    echo -ne '[         ᗧ····················]\r'
+    sleep 1
+    echo -ne '[              ᗧ···············]\r'
+    sleep 1
+    echo -ne '[                   ᗧ··········]\r'
+    sleep 1
+    echo -ne '[                       ᗧ······]\r'
+    sleep 1
+    echo -ne '[                             ᗧ]\r'
+    sleep 1
+    echo -ne '[·····························ᗤ]\r'
+    sleep 1
+    echo -ne '[·························ᗤ    ]\r'
+    sleep 1
+    echo -ne '[··················ᗤ           ]\r'
+    sleep 1
+    echo -ne '[···············ᗤ              ]\r'
+    sleep 1
+    echo -ne '[···········ᗤ                  ]\r'
+    sleep 1
+    echo -ne '[·······ᗤ                      ]\r'
+    sleep 1
+    echo -ne '[···ᗤ                          ]\r'
+    sleep 1
+    echo -ne '[ᗤ                             ]\r'
+    sleep 1
 done
 python2.7 create_cluster.py
 #curl -X POST -u admin:admin -H "Content-Type: application/json" -d @cdh5_service_template.json http://127.0.0.1:7180/api/v19/cm/importClusterTemplate?addRepositories=true
@@ -60,5 +89,5 @@ echo -ne "Successful start service\n"
 #sh ./CM_service_change.sh stop 
 sudo -u hdfs hdfs dfs -mkdir /user/root
 sudo -u hdfs hdfs dfs -chown root:root /user/root
-sudo -u hdfs hdfs dfs -chnod 755 /user
+sudo -u hdfs hdfs dfs -chmod 755 /user
 exec bash

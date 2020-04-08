@@ -5,6 +5,11 @@
 * CDH Version : 5.16.2
 ---
 ## Usage 
+### Open and run
+
+```bash
+docker run -v /root/.ssh:/root/.ssh -v /etc/ssh:/etc/ssh -v /etc/sshd:/etc/sshd --privileged=true --sysctl net.ipv6.conf.all.disable_ipv6=1 -it -p 7180:7180 -p 8888:8888 -p 2222:22 ethonwu/cloudera-cdh5-quickstart:finish_install
+```
 ### 0 to All service build 
 
 ```bash
