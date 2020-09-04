@@ -15,7 +15,7 @@ docker run -v /root/.ssh:/root/.ssh -v /etc/ssh:/etc/ssh -v /etc/sshd:/etc/sshd 
 ```bash
 git clone https://github.com/Ethonwu/Cloudera-CDH-all-in-one-Docker
 cd Cloudera-CDH-all-in-one-Docker
-docker build . -t cloudera
+docker build . -t cloudera_tmp
 docker volume create --name cloudera_tmp
 docker run -v cloudera:/opt/ --privileged=true --sysctl net.ipv6.conf.all.disable_ipv6=1 -it -p 7180:7180 -p 8888:8888 cloudera_tmp
 docker tag -m "Install finfsh" cloudera_tmp cloudera 
@@ -39,13 +39,14 @@ docker run -v /root/.ssh:/root/.ssh -v /etc/ssh:/etc/ssh -v /etc/sshd:/etc/sshd 
 2. Cloudera Quick start Docker image
 ---
 ## TODO
+* [ ] Tag each type of stage , such as : CM Ready , Hive Impala tag , Spark2 Tag ...
+* [ ] Troubleshooting docker volume create problem
 * [x] Hugepage sys kernel setting
 * [x] Location bug fix 
 * [x] Use CM API install CM Service and All CDH Service and Depoly
 * [x] Hostname bug 
 * [x] Python deploy CMS
 * [x] Upload to Dockerhub 
-* [ ] Tag each type of stage , such as : CM Ready , Hive Impala tag , Spark2 Tag ...
 * [x] Can using ssh login 
 
 
